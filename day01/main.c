@@ -1,8 +1,7 @@
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#define SIZE 20
+#define SIZE 10
 
 int find_freq(int starting_freq, FILE *input)
 {
