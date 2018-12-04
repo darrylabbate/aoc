@@ -1,3 +1,5 @@
+#/usr/bin/awk -f
+
 { freq[NR] = $1 } 
 
 END { 
