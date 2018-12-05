@@ -1,4 +1,4 @@
-#/usr/bin/awk -f
+#/usr/local/bin/gawk -f
 
 { freq[NR] = $1 } 
 
