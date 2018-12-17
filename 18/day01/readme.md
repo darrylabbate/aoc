@@ -5,7 +5,7 @@ Originally I wrote my solution in C (which I've left up), but I've since decided
 ## Part 1
 
 ```bash
-$ awk '{f+=$0} END{print f}' < input
+$ awk '{f+=$0} END{print f}' input
 ```
 
 ## Part 2
