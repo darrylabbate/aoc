@@ -1,5 +1,3 @@
 # Advent of Code 2018
 
-### Note
-
-Unfortunately I am not skilled enough as a programmer to come up with these solutions 100% on my own. Many (or all) solutions will be heavily influenced by online searches and other people's solutions.
+I'm not skilled enough as a programmer, nor do I possess the patience, to solve these puzzles in a particular language. I'll probably end up leaning on Unix tools or some other fucked up methods of logic to solve these.
