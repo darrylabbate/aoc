@@ -26,5 +26,5 @@ END {
 }
 ```
 ```bash
-$ awk -f part2.awk < input
+$ awk -f part2.awk input
 ```

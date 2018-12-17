@@ -1,5 +1,3 @@
-#!/usr/local/bin/gawk -f
-
 { freq[NR] = $1 } 
 
 END { 
