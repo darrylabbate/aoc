@@ -3,6 +3,7 @@
 int part1(FILE *input) {
     int floor = 0;
     char c;
+    rewind(input);
     while ((c = fgetc(input)) != EOF) {
         switch(c) {
         case '(': floor++; break;
@@ -17,6 +18,7 @@ int part2(FILE *input) {
     int floor = 0;
     int pos   = 0;
     char c;
+    rewind(input);
     while ((c = fgetc(input)) != EOF) {
         pos++;
         switch(c) {
@@ -26,7 +28,7 @@ int part2(FILE *input) {
         }
 
         if (floor < 0)
-            printf("%d\n", pos);
+            break;
     }
     return pos;
 }
