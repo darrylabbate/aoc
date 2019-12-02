@@ -19,16 +19,13 @@ int part2(FILE *input) {
     int pos   = 0;
     char c;
     rewind(input);
-    while ((c = fgetc(input)) != EOF) {
+    while (((c = fgetc(input)) != EOF) && (floor >= 0)) {
         pos++;
         switch(c) {
         case '(': floor++; break;
         case ')': floor--; break;
         default: break;
         }
-
-        if (floor < 0)
-            break;
     }
     return pos;
 }
