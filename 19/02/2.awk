@@ -19,6 +19,6 @@ END {
         for (v=1; v<100; v++)
             if (c($0,n,v) == "19690720") {
                 print (100 * n + v)
-                break
+                exit
             }
 }
