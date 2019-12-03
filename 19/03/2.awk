@@ -8,18 +8,15 @@ NR == 1 {
             for (j = 0; j < int(substr(a[i],2)); j++) {
                 ap[k++] = ac[1] "," ++ac[2]
             }
-        }
-        else if (a[i] ~ /^D/) {
+        } else if (a[i] ~ /^D/) {
             for (j = 0; j < int(substr(a[i],2)); j++) {
                 ap[k++] = ac[1] "," --ac[2]
             }
-        }
-        else if (a[i] ~ /^R/) {
+        } else if (a[i] ~ /^R/) {
             for (j = 0; j < int(substr(a[i],2)); j++) {
                 ap[k++] = ++ac[1] "," ac[2]
             }
-        }
-        else if (a[i] ~ /^L/) {
+        } else if (a[i] ~ /^L/) {
             for (j = 0; j < int(substr(a[i],2)); j++) {
                 ap[k++] = --ac[1] "," ac[2]
             }
