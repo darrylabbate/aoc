@@ -14,7 +14,7 @@ BEGIN {
 }
 
 {
-    for(k = $1; k <= $2; k++)
+    for (k = $1; k <= $2; k++)
         p += e(k)
     print p
 }
