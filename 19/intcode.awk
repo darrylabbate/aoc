@@ -12,7 +12,8 @@
             m[m[i+3]+1] = m[m[i+1]+1] * m[m[i+2]+1]
         else if (m[i] == "99") {
             print m[1]
-            exit
-        }
+            exit 0
+        } else
+            exit 1
     }
 }
