@@ -1,13 +1,13 @@
 # basic intcode interpreter
 # opcodes 1, 2, 3, 4, 5, 6, 7, 8, 99
 # supports parameter modes (immediate, positional)
-# prints the value calculated from the input upon successful
-# termination (halt)
+# prints the value calculated from the input instruction upon
+# successful termination (halt)
 #
 # usage:
-#   awk -f intcode.awk <input file>
-#   awk -f intcode.awk <<< '<comma-delimited program>'
-#   awk -f intcode.awk <<< '<comma-delimited program> <input>'
+#   awk -f intcode.awk <program file>
+#   awk -f intcode.awk <<< '<program>'
+#   awk -f intcode.awk <<< '<program> <input instruction>'
 
 function add(x,y) { p[p[i+3]] = x + y;  i += 4 }
 function mul(x,y) { p[p[i+3]] = x * y;  i += 4 }
