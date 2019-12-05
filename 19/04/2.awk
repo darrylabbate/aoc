@@ -4,8 +4,12 @@ function e(x) {
     for (i = 1; i < 6; i++)
         if (int(substr(x,i,1)) > int(substr(x,i+1,1)))
             return 0
-    for (i = 1; i < 6; i++)
-        if (int(substr(x,i,1)) == int(substr(x,i+1,1)))
+    for (i = 1; i < 10; i++)
+        n[i] = 0
+    for (i = 1; i <= 6; i++)
+        n[int(substr(x,i,1))]++
+    for (i = 1; i < 10; i++)
+        if (n[i] == 2)
             return 1
     return 0
 }
