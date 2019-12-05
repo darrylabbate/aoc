@@ -1,12 +1,12 @@
 function add(x,y) { p[p[i+3]+1] = x + y;  i += 4 }
 function mul(x,y) { p[p[i+3]+1] = x * y;  i += 4 }
 function inp()    { p[p[i+1]+1] = id;     i += 2 }
-function out()    { id = p[p[i+1]+1];     i += 2 }
+function out(x)   { id = x;               i += 2 }
 function jnz(x,y) { i =  x ? y + 1 :      i +  3 }
 function jz(x,y)  { i = !x ? y + 1 :      i +  3 }
 function lt(x,y)  { p[p[i+3]+1] = x < y;  i += 4 }
 function eq(x,y)  { p[p[i+3]+1] = x == y; i += 4 }
-function halt()   { print id; exit 0             }
+function halt()   { print id;             exit 0 }
 
 {
     l  = split($0,p,",")
@@ -23,7 +23,7 @@ function halt()   { print id; exit 0             }
         else if (op == 3)
             inp()
         else if (op == 4)
-            out()
+            out(xm ? p[i+1] : p[p[i+1]+1])
         else if (op == 5)
             jnz(xm ? p[i+1] : p[p[i+1]+1], ym ? p[i+2] : p[p[i+2]+1])
         else if (op == 6)
