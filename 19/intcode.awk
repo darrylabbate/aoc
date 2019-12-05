@@ -13,8 +13,8 @@ function add(x,y) { p[p[i+3]] = x + y;  i += 4 }
 function mul(x,y) { p[p[i+3]] = x * y;  i += 4 }
 function inp()    { p[p[i+1]] = input;  i += 2 }
 function out(x)   { input = x;          i += 2 }
-function jnz(x,y) { i =  x ? y :        i +  3 }
-function jz(x,y)  { i = !x ? y :        i +  3 }
+function jit(x,y) { i =  x ? y :        i +  3 }
+function jif(x,y) { i = !x ? y :        i +  3 }
 function lt(x,y)  { p[p[i+3]] = x < y;  i += 4 }
 function eq(x,y)  { p[p[i+3]] = x == y; i += 4 }
 function halt()   { print input;        exit 0 }
@@ -35,8 +35,8 @@ function halt()   { print input;        exit 0 }
         else if (op == 2)  mul(p1, p2)
         else if (op == 3)  inp()
         else if (op == 4)  out(p1)
-        else if (op == 5)  jnz(p1, p2)
-        else if (op == 6)  jz(p1, p2)
+        else if (op == 5)  jit(p1, p2)
+        else if (op == 6)  jif(p1, p2)
         else if (op == 7)  lt(p1, p2)
         else if (op == 8)  eq(p1, p2)
         else if (op == 99) halt()
