@@ -1,23 +1,29 @@
 # basic intcode interpreter
 # opcodes 1, 2, 3, 4, 5, 6, 7, 8, 99
 # supports parameter modes (immediate, positional)
-# prints the value at position 0 upon successful termination (halt)
+# prints the value calculated from the input upon successful
+# termination (halt)
+#
+# usage:
+#   awk -f intcode.awk <input file>
+#   awk -f intcode.awk <<< '<comma-delimited program>'
+#   awk -f intcode.awk <<< '<comma-delimited program> <input>'
 
 function add(x,y) { p[p[i+3]] = x + y;  i += 4 }
 function mul(x,y) { p[p[i+3]] = x * y;  i += 4 }
-function inp()    { p[p[i+1]] = id;     i += 2 }
-function out(x)   { id = x;             i += 2 }
+function inp()    { p[p[i+1]] = input;  i += 2 }
+function out(x)   { input = x;          i += 2 }
 function jnz(x,y) { i =  x ? y :        i +  3 }
 function jz(x,y)  { i = !x ? y :        i +  3 }
 function lt(x,y)  { p[p[i+3]] = x < y;  i += 4 }
 function eq(x,y)  { p[p[i+3]] = x == y; i += 4 }
-function halt()   { print p[0];         exit 0 }
+function halt()   { print input;        exit 0 }
 
 {
-    l  = split($0,t,",")
+    l  = split($1,t,",")
     for (j = 0; j < l; j++)
         p[j] = t[j+1]
-    id = 1
+    input = $2 ? $2 : 5
     for (i = 0; i < l;) {
         op  = p[i]
         xm  = int(op/100)  % 10
