@@ -1,8 +1,8 @@
 # basic intcode interpreter
 # opcodes 1, 2, 3, 4, 5, 6, 7, 8, 99
-# supports parameter modes (immediate, positional)
+# supports parameter modes (immediate, positional).
 # prints the value calculated from the input instruction upon
-# successful termination (halt)
+# every invocation of out() (opcode 4).
 #
 # usage:
 #   awk -f intcode.awk <program file>
@@ -12,12 +12,13 @@
 function add(x,y) { p[p[i+3]] = x + y;  i += 4 }
 function mul(x,y) { p[p[i+3]] = x * y;  i += 4 }
 function inp()    { p[p[i+1]] = input;  i += 2 }
-function out(x)   { input = x;          i += 2 }
+function out(x)   { print x; input = x; i += 2 }
 function jit(x,y) { i =  x ? y :        i +  3 }
 function jif(x,y) { i = !x ? y :        i +  3 }
 function lt(x,y)  { p[p[i+3]] = x < y;  i += 4 }
 function eq(x,y)  { p[p[i+3]] = x == y; i += 4 }
-function halt()   { print input;        exit 0 }
+function halt()   {                     exit 0 }
+function err()    { print "Error";      exit 1 }       
 
 {
     l  = split($1,t,",")
@@ -40,6 +41,6 @@ function halt()   { print input;        exit 0 }
         else if (op == 7)  lt(p1, p2)
         else if (op == 8)  eq(p1, p2)
         else if (op == 99) halt()
-        else exit 1
+        else               err()
     }
 }
