@@ -1,5 +1,6 @@
-BEGIN { FS = ")"   }
-      { o[$2] = $1 }
+BEGIN { FS = ")" }
+
+{ o[$2] = $1 }
 
 END {
     for (i = "SAN"; i != "COM"; i = o[i])
