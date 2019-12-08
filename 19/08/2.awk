@@ -12,13 +12,13 @@ BEGIN {
 
     for (i = int(NF/(w*h)); i >= 0; i--)
         for (j = 1; j <= w*h; j++) {
-            if      (substr(layer[i],j,1) == 0) image[j-1] = " "
-            else if (substr(layer[i],j,1) == 1) image[j-1] = "#"
+            if      (substr(layer[i],j,1) == 0) image[j] = " "
+            else if (substr(layer[i],j,1) == 1) image[j] = "#"
         }
 
-    for (i = 0; i < w*h; i++) {
+    for (i = 1; i <= w*h; i++) {
         printf "%s", image[i]
-        if (!((i+1) % w))
+        if (!(i % w))
             printf "\n"
     }
 }
