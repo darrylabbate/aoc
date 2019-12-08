@@ -6,8 +6,8 @@ function jit(x,y) { i =  x ? y+os :        i +  3 }
 function jif(x,y) { i = !x ? y+os :        i +  3 }
 function lt(x,y)  { p[p[i+3]+os] = x < y;  i += 4 }
 function eq(x,y)  { p[p[i+3]+os] = x == y; i += 4 }
-function quit()   { print max;              exit 0 }
-function err()    { print "input error";    exit 1 }
+function quit()   { print max;             exit 0 }
+function err()    { print "input error";   exit 1 }
 
 function transfer() {
     if      (os == 0)   { A = i; i = B; os = l   }
@@ -26,11 +26,10 @@ function halt() {
 
 function init() {
     input = 0
-    z = 0
-    for (n = 0; n < 5; n++)
-    for (j = 0; j < l; j++) {
-        p[z++] = t[j+1]
-    }
+    i     = 0
+    for (k = 0; k < 5; k++)
+        for (j = 0; j < l; j++)
+            p[i++] = t[j+1]
 
     A  = 0
     B  = l
@@ -66,7 +65,7 @@ BEGIN {
     max   = 0
     seq   = 1
     perms = int(length(phases)/5)
-    for (i = 0; i < l*5;) {
+    while (1) {
         op  = p[i]
         xm  = int(op/100)  % 10
         ym  = int(op/1000) % 10
