@@ -16,16 +16,16 @@ BEGIN { input = 2 }
         y   = ym == 1 ? p[i+2] : ym == 2 ? p[p[i+2]+os] : p[p[i+2]]
         rx  = xm ? p[i+1]+os : p[i+1]
         rz  = zm ? p[i+3]+os : p[i+3]
-        if      (op == 1)  { p[rz] = x + y;              i += 4 }
-        else if (op == 2)  { p[rz] = x * y;              i += 4 }
-        else if (op == 3)  { p[rx] = input;              i += 2 }
-        else if (op == 4)  { printf "%d\n",x; input = x; i += 2 }
-        else if (op == 5)  { i =  x ? y :                i +  3 }
-        else if (op == 6)  { i = !x ? y :                i +  3 }
-        else if (op == 7)  { p[rz] = x <  y;             i += 4 }
-        else if (op == 8)  { p[rz] = x == y;             i += 4 }
-        else if (op == 9)  { os += x;                    i += 2 }
-        else if (op == 99) {                             exit 0 }
-        else               { print "Error";              exit 1 }       
+        if      (op == 1)  { p[rz] = x + y;                i += 4 }
+        else if (op == 2)  { p[rz] = x * y;                i += 4 }
+        else if (op == 3)  { p[rx] = input;                i += 2 }
+        else if (op == 4)  { printf "%.0f\n",x; input = x; i += 2 }
+        else if (op == 5)  { i =  x ? y :                  i +  3 }
+        else if (op == 6)  { i = !x ? y :                  i +  3 }
+        else if (op == 7)  { p[rz] = x <  y;               i += 4 }
+        else if (op == 8)  { p[rz] = x == y;               i += 4 }
+        else if (op == 9)  { os += x;                      i += 2 }
+        else if (op == 99) {                               exit 0 }
+        else               { print "Error";                exit 1 }       
     }
 }
