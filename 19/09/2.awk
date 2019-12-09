@@ -1,18 +1,4 @@
-# basic intcode interpreter
-# opcodes 1, 2, 3, 4, 5, 6, 7, 8, 99
-# supports parameter modes (immediate, positional, relative).
-# prints the value calculated from the input instruction upon
-# every invocation of out() (opcode 4).
-#
-# usage:
-#   awk -f intcode.awk <program file>
-#   awk -f intcode.awk <<< '<program>'
-#   awk -f intcode.awk <<< '<program> <input instruction>'
-#
-# WARNING: output value may exceed max 32-bit integer, which is the
-#          max integer in mawk.
-
-BEGIN { input = 1 }
+BEGIN { input = 2 }
 
 {
     l = split($1,t,",")
