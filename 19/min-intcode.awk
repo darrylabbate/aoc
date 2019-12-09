@@ -1,0 +1,1 @@
+{v=0;split($0,t,",");for(i in t)p[i-1]=t[i];i=0;while(o<99){o=p[i];a=int(o/100)%10;b=int(o/1000)%10;c=int(o/10000)%10;o%=100;w=a?p[i+1]+r:p[i+1];z=c?p[i+3]+r:p[i+3];x=a==1?p[i+1]:p[w];y=b>1?p[p[i+2]+r]:b?p[i+2]:p[p[i+2]];p[w]=o==3?v:p[w];p[z]=o==1?x+y:o==2?x*y:o==7?x<y:o==8?x==y:p[z];r+=o>8?x:0;if(o==4){printf"%.f\n",x;v=x}i=o==5?x?y:i+3:o==6?!x?y:i+3:o~/3|4|9/?i+2:i+4}}
