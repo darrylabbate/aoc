@@ -15,7 +15,7 @@ END {
             for (b = 0; b < NR; b++) {
             for (a = 0; a < NF; a++) {
                 if (c[a "," b]) {
-                    sl = atan2(b-y,a-x)
+                    sl = atan2(y-b,x-a)
                     if (!(s[sl])) {
                         s[sl] = a "," b
                         d[x "," y]++
