@@ -1,3 +1,7 @@
+BEGIN { FS = "[=,>]"                                      }
+      { x[NR] = $2; y[NR] = $4; z[NR] = $6                }
+END   { printf "%.f\n", lcm(step(x),lcm(step(y),step(z))) }
+
 function gcd(x,y,t) {
     while (y > 0) {
         t = x
@@ -28,16 +32,4 @@ function step(a,v,s) {
         if (stop) break
     }
     return s
-}
-
-BEGIN { FS = "[=,>]" }
-
-{
-    x[NR] = $2
-    y[NR] = $4
-    z[NR] = $6
-}
-
-END {
-    printf "%.f\n", lcm(step(x),lcm(step(y),step(z)))
 }
