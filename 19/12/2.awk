@@ -33,14 +33,11 @@ function step(a,v,s) {
 BEGIN { FS = "[=,>]" }
 
 {
-    x[NR] = $2; ox[NR] = x[NR]
-    y[NR] = $4; oy[NR] = y[NR]
-    z[NR] = $6; oz[NR] = z[NR]
+    x[NR] = $2
+    y[NR] = $4
+    z[NR] = $6
 }
 
 END {
-    xs = step(x)
-    ys = step(y)
-    zs = step(z)
-    printf "%.f\n", lcm(xs,lcm(ys,zs))
+    printf "%.f\n", lcm(step(x),lcm(step(y),step(z)))
 }
