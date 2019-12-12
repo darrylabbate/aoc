@@ -1,9 +1,18 @@
-BEGIN { inp = inp ? inp : 0 }
+BEGIN { inp = inp ? inp : 1 }
+
+function halt() {
+    for (j = 0; j >= -5; j--) {
+        for (i = 1; i <= 40; i++) {
+            printf "%s", hull[i "," j]
+        }
+        printf "\n"
+    }
+}
 
 function out() {
     if (++c % 2 == 1) {
         if (x) color = "#"
-        else   color = "."
+        else   color = " "
     } else {
         if (!(hull[x1 "," y1])) ++panels
         hull[x1 "," y1] = color
@@ -52,7 +61,7 @@ function out() {
         else if (op == 7)  { p[rz] = x <  y;            i += 4 }
         else if (op == 8)  { p[rz] = x == y;            i += 4 }
         else if (op == 9)  { os += x;                   i += 2 }
-        else if (op == 99) { print panels;              exit 0 }
+        else if (op == 99) { halt();                    exit 0 }
         else               { print "input error";       exit 1 }       
     }
 }
