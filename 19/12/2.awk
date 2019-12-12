@@ -1,51 +1,68 @@
-function abs(x) { return x < 0 ? -x : x }
+function gcd(x,y,t) {
+    while (y > 0) {
+        t = x
+        x = y
+        y = t % y
+    }
+    return x
+}
+
+function lcm(x,y,r) {
+    if (!x || !y) return 0
+    r = x * y / gcd(x,y)
+    return r < 0 ? -r : r
+}
 
 BEGIN { FS = "[=,>]" }
 
 {
-    ox[NR] = $2
-    oy[NR] = $4
-    oz[NR] = $6
-    px[NR] = $2
-    py[NR] = $4
-    pz[NR] = $6
-    vx[NR] = 0
-    vy[NR] = 0
-    vz[NR] = 0
+    px[NR] = $2; ox[NR] = px[NR]
+    py[NR] = $4; oy[NR] = py[NR]
+    pz[NR] = $6; oz[NR] = pz[NR]
 }
 
 END {
-    while (++s) {
+    while (xs += 2) {
         for (i in px) for (j in px) {
             if (j != i) {
                 if      (px[i] > px[j]) --vx[i]
                 else if (px[i] < px[j]) ++vx[i]
+            }
+        }
+        for (i in px) px[i] += vx[i]
+        stop = 1
+        for (i in px)
+            if (vx[i]) stop = 0
+        if (stop) break
+    }
+
+    while (ys += 2) {
+        for (i in py) for (j in py) {
+            if (j != i) {
                 if      (py[i] > py[j]) --vy[i]
                 else if (py[i] < py[j]) ++vy[i]
+            }
+        }
+        for (i in py) py[i] += vy[i]
+        stop = 1
+        for (i in py)
+            if (vy[i]) stop = 0
+        if (stop) break
+    }
+
+    while (zs += 2) {
+        for (i in pz) for (j in pz) {
+            if (j != i) {
                 if      (pz[i] > pz[j]) --vz[i]
                 else if (pz[i] < pz[j]) ++vz[i]
             }
         }
-        for (i in px) {
-            px[i] += vx[i]
-            py[i] += vy[i]
-            pz[i] += vz[i]
-        }
-
-        stop = 4
-        for (i in px) {
-            if (!(px[i] == ox[i] \
-            &&  py[i] == oy[i] \
-            &&  pz[i] == oz[i] \
-            &&  vx[i] == 0     \
-            &&  vy[i] == 0     \
-            &&  vz[i] == 0))
-                stop--
-        }
-
-        if (stop == 4) {
-            print s
-            exit 0
-        }
+        for (i in pz) pz[i] += vz[i]
+        stop = 1
+        for (i in pz)
+            if (vz[i]) stop = 0
+        if (stop) break
     }
+
+    printf "%.f\n", lcm(xs,lcm(ys,zs))
 }
