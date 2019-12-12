@@ -13,56 +13,34 @@ function lcm(x,y,r) {
     return r < 0 ? -r : r
 }
 
+function step(a,v,s) {
+    while (s += 2) {
+        for (i in a) for (j in a) {
+            if (j != i) {
+                if      (a[i] > a[j]) --v[i]
+                else if (a[i] < a[j]) ++v[i]
+            }
+        }
+        for (i in a) a[i] += v[i]
+        stop = 1
+        for (i in a)
+            if (v[i]) stop = 0
+        if (stop) break
+    }
+    return s
+}
+
 BEGIN { FS = "[=,>]" }
 
 {
-    px[NR] = $2; ox[NR] = px[NR]
-    py[NR] = $4; oy[NR] = py[NR]
-    pz[NR] = $6; oz[NR] = pz[NR]
+    x[NR] = $2; ox[NR] = x[NR]
+    y[NR] = $4; oy[NR] = y[NR]
+    z[NR] = $6; oz[NR] = z[NR]
 }
 
 END {
-    while (xs += 2) {
-        for (i in px) for (j in px) {
-            if (j != i) {
-                if      (px[i] > px[j]) --vx[i]
-                else if (px[i] < px[j]) ++vx[i]
-            }
-        }
-        for (i in px) px[i] += vx[i]
-        stop = 1
-        for (i in px)
-            if (vx[i]) stop = 0
-        if (stop) break
-    }
-
-    while (ys += 2) {
-        for (i in py) for (j in py) {
-            if (j != i) {
-                if      (py[i] > py[j]) --vy[i]
-                else if (py[i] < py[j]) ++vy[i]
-            }
-        }
-        for (i in py) py[i] += vy[i]
-        stop = 1
-        for (i in py)
-            if (vy[i]) stop = 0
-        if (stop) break
-    }
-
-    while (zs += 2) {
-        for (i in pz) for (j in pz) {
-            if (j != i) {
-                if      (pz[i] > pz[j]) --vz[i]
-                else if (pz[i] < pz[j]) ++vz[i]
-            }
-        }
-        for (i in pz) pz[i] += vz[i]
-        stop = 1
-        for (i in pz)
-            if (vz[i]) stop = 0
-        if (stop) break
-    }
-
+    xs = step(x)
+    ys = step(y)
+    zs = step(z)
     printf "%.f\n", lcm(xs,lcm(ys,zs))
 }
