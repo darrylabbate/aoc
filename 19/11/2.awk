@@ -14,7 +14,6 @@ function out() {
         if (x) color = "#"
         else   color = " "
     } else {
-        if (!(hull[x1 "," y1])) ++panels
         hull[x1 "," y1] = color
         if (d == 0) {
             if (x) { d = 1; ++x1 }
