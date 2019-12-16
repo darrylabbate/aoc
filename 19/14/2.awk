@@ -30,4 +30,18 @@ function cost(m, q,     n, eq, ore) {
     return ore
 }
 
-END { print cost("FUEL", p["FUEL"]) }
+function bsearch(i, v, l, h) {
+    lc = cost(i, l)
+    hc = cost(i, h)
+    if (hc < lc) return h
+    m  = int((l + h) / 2)
+    mc = cost(i, m)
+    if (mc == v || h - l <= 1) return l
+    return (mc > v) ? bsearch(i, v, l, m) \
+                    : bsearch(i, v, m, h)
+}
+
+END {
+    u = int(10^12 / cost("FUEL", p["FUEL"])) * 2
+    printf "%.f\n", bsearch("FUEL", 10^12, 0, u)
+}
