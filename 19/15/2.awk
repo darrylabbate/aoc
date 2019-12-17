@@ -19,7 +19,7 @@ function out() {
             if (!o[dx "," dy+1]) d = 1
             else                 d = 2
         }
-    } else if (x == 1) {
+    } else {
         if      (d == 1) ++dy
         else if (d == 2) --dy
         else if (d == 3) --dx
@@ -30,10 +30,24 @@ function out() {
         if (!o[dx "," dy]) ++c
         else               --c
 
-        o[dx "," dy]++
-    } else if (x == 2) {
-        print ++c
-        exit 0
+        o[dx "," dy] = c
+    }
+
+    if (x == 2) {
+        if (++s == 1) {
+            for (ay = 21; ay > -20; ay--)
+                for (ax = -21; ax < 20; ax++)
+                    if (o[ax "," ay] > 0)
+                        o[ax "," ay] = 0
+            c = 0
+        } else if (s > 2) {
+            max = 0
+            for (ay = 21; ay > -20; ay--)
+                for (ax = -21; ax < 20; ax++)
+                    max = o[ax "," ay] > max ? o[ax "," ay] : max
+            print max
+            exit 0
+        }
     }
     inp = d
 }
