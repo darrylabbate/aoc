@@ -1,11 +1,11 @@
 BEGIN { FS="-" }
 
 function e(x) {
-    for (i = 1; i < 6; i++)
-        if (substr(x,i,1) > substr(x,i+1,1))
+    for (i = 5; i > 0; i--)
+        if ((int(x/10^i)%10) > (int(x/10^(i-1))%10)) 
             return 0
-    for (i = 1; i < 6; i++)
-        if (substr(x,i,1) == substr(x,i+1,1))
+    for (i = 5; i > 0; i--)
+        if ((int(x/10^i)%10) == (int(x/10^(i-1))%10)) 
             return 1
     return 0
 }
