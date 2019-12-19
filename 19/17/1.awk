@@ -21,7 +21,6 @@ function out() {
     } else {
         s[vx++ "," vy] = x
     }
-    inp = x
 }
 
 {
