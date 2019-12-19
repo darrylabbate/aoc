@@ -11,10 +11,14 @@
 # Input value can be modified from the command line:
 #   awk -v inp=<val> -f intcode.awk <program file>
 
-BEGIN { inp = inp ? inp : 0 }
+BEGIN { input = input ? input : 0 }
+
+function inp() {
+    p[rx] = input
+}
 
 function out() {
-    printf "%.f\n", inp = x
+    printf "%.f\n", x
 }
 
 {
@@ -35,7 +39,7 @@ function out() {
         rz  = zm ? p[i+3]+os : p[i+3]
         if      (op == 1) { p[rz] = x + y;  i += 4 }
         else if (op == 2) { p[rz] = x * y;  i += 4 }
-        else if (op == 3) { p[rx] = inp;    i += 2 }
+        else if (op == 3) { inp();          i += 2 }
         else if (op == 4) { out();          i += 2 }
         else if (op == 5) { i =  x ? y :    i +  3 }
         else if (op == 6) { i = !x ? y :    i +  3 }
