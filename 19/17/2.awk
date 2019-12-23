@@ -1,10 +1,10 @@
 function to_ascii(c) {
-    if      (c == "A") return "65"
-    else if (c == "B") return "66"
-    else if (c == "C") return "67"
-    else if (c == "L") return "76"
-    else if (c == "R") return "82"
-    else if (c == ",") return "44"
+    if      (c == "A") return 65
+    else if (c == "B") return 66
+    else if (c == "C") return 67
+    else if (c == "L") return 76
+    else if (c == "R") return 82
+    else if (c == ",") return 44
     else               return c + 48
 }
 
@@ -129,15 +129,6 @@ function map_path() {
         }
     }
     return bp
-}
-
-function print_map() {
-    for (y = 0; y <= my; y++) {
-        for (x = 0; x <= mx; x++) {
-            printf s[x "," y] ? s[x "," y] : " "
-        }
-        printf "\n"
-    }
 }
 
 function inp() {
