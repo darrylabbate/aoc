@@ -66,7 +66,7 @@ function reachable(o,keys,      c,coords,cx,cy,s,n,i) {
                         r[keys] = r[keys] v[n[i]]
                     else
                         enqueue(n[i])
-                } else if (v[n[i]] == "." || v[n[i]] == "@") {
+                } else if (v[n[i]] ~ /\.|@/) {
                     enqueue(n[i])
                 }
             }
