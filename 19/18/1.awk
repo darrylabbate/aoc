@@ -3,7 +3,6 @@ BEGIN {
     ep = 0
     dp = 0
     delete q
-    delete cache
 }
 
 {
@@ -11,67 +10,42 @@ BEGIN {
         v[i "," NR] = $i
         if ($i ~ /[a-z]/)
             k[$i]  = i "," NR
-        # else if ($i ~ /[A-Z]/) 
-        #     d[tolower($i)]  = i "," NR
         else if ($i == "@") 
             origin = i "," NR
     }
 }
 
 END {
-    # for (y = 1; y <= NF; y++) {
-    #     for (x = 1; x <= NR; x++) {
-    #         printf v[x "," y]
-    #     }
-    #     printf "\n"
-    # }
     for (i in k)
         all_keys = all_keys i
-    all_keys = isort(all_keys)
     print collect("@", all_keys)
 }
 
-function collect(c,keys,cidx,rk,i,d,nk,res) {
+function collect(c,keys,    cidx,rk,i,d,nk,res) {
     if (!keys) return 0
-
     cidx = c "," keys
     if (cidx in cache) return cache[cidx]
-
-    res = 0
+    res = 9999
     split(reachable(c,keys),rk,"")
     for (i in rk) {
         nk = keys
         sub(rk[i],"",nk)
         d = distance(c,rk[i]) + collect(rk[i],nk)
-        res = res > d ? res : d
+        res = res > d ? d : res
     }
     cache[cidx] = res
     return res
 }
 
-function isort(str,     arr,i,j,l,t,rstr) {
-    l = split(str,arr,"")
-    for (i = 2; i <= l; i++) {
-        for (j = i; j > 1 && arr[j-1] > arr[j]; j--) {
-            t = arr[j-1];
-            arr[j-1] = arr[j];
-            arr[j] = t
-        }
-    }
-    for (i = 1; i <= l; i++)
-        rstr = rstr arr[i]
-    return rstr
-}
-
 function distance(a,b) {
-    if (dist[a "," b] == "")
-        map_distance(a == "@" ? origin : k[a], \
+    if (!(a "," b in dist))
+        map_distance(a == "@" ? origin : k[a],
                      b == "@" ? origin : k[b])
     return dist[a "," b]
 }
 
-function reachable(o,keys,    c,coords,cx,cy,s,n,i) {
-    if (r[keys]) return r[keys]
+function reachable(o,keys,      c,coords,cx,cy,s,n,i) {
+    if (keys in r) return r[keys]
     enqueue(o == "@" ? origin : k[o])
     while (length(q)) {
         c = dequeue()
@@ -87,17 +61,18 @@ function reachable(o,keys,    c,coords,cx,cy,s,n,i) {
                 s[n[i]] = 1
                 if (v[n[i]] ~ /[A-Z]/ && keys !~ tolower(v[n[i]])) {
                     enqueue(n[i])
-                } else if (v[n[i]] ~ /[a-z]/ && keys ~ v[n[i]]) {
-                    r[keys] = r[keys] v[n[i]]
-                    enqueue(n[i])
-                } else if (v[n[i]] == ".") {
+                } else if (v[n[i]] ~ /[a-z]/) {
+                    if (keys ~ v[n[i]])
+                        r[keys] = r[keys] v[n[i]]
+                    else
+                        enqueue(n[i])
+                } else if (v[n[i]] == "." || v[n[i]] == "@") {
                     enqueue(n[i])
                 }
             }
         }
     }
     empty_queue()
-    r[keys] = isort(r[keys])
     return r[keys]
 }
 
@@ -149,7 +124,7 @@ function dequeue() {
 }
 
 function empty_queue(i) {
-    for (i = dp; i <= ep; i++)
+    for (i in q)
         delete q[i]
     ep = 0
     dp = 0
