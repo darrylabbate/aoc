@@ -102,6 +102,16 @@ function map_distance(a,b,     c,coords,cx,cy,steps,s,n,i) {
         dist[v[b] "," v[a]] = 0
         return
     }
+    split(a,ac,",")
+    split(b,bc,",")
+    if ((ac[1] < ox && bc[1] > ox) \
+    ||  (ac[1] > ox && bc[1] < ox) \
+    ||  (ac[2] < oy && bc[2] > oy) \
+    ||  (ac[2] > oy && bc[2] < oy)) {
+        dist[v[a] "," v[b]] = 0
+        dist[v[b] "," v[a]] = 0
+        return
+    }
     enqueue(a)
     steps[a] = 0
     while (length(q)) {
