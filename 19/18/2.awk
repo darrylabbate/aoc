@@ -20,26 +20,31 @@ BEGIN {
 END {
     for (i in k)
         all_keys = all_keys i
-    v[ox-1 "," oy-1] = "@"
+    v[ox-1 "," oy-1] = 1
     v[ox   "," oy-1] = "#"
-    v[ox+1 "," oy-1] = "@"
+    v[ox+1 "," oy-1] = 2
     v[ox-1 "," oy]   = "#"
     v[ox   "," oy]   = "#"
     v[ox+1 "," oy]   = "#"
-    v[ox-1 "," oy+1] = "@"
+    v[ox-1 "," oy+1] = 3
     v[ox   "," oy+1] = "#"
-    v[ox+1 "," oy+1] = "@"
-    k["o1"] = ox-1 "," oy-1
-    k["o2"] = ox+1 "," oy-1
-    k["o3"] = ox-1 "," oy+1
-    k["o4"] = ox+1 "," oy+1
+    v[ox+1 "," oy+1] = 4
+    k[1] = ox-1 "," oy-1
+    k[2] = ox+1 "," oy-1
+    k[3] = ox-1 "," oy+1
+    k[4] = ox+1 "," oy+1
     # for (y = 1; y <= NF; y++) {
     #     for (x = 1; x <= NR; x++) {
     #         printf v[x "," y]
     #     }
     #     printf "\n"
     # }
-    # print collect("@", all_keys)
+    # for (i = 1; i <= 4; i++)
+    #     print distance(i, "f")
+    # for (i = 1; i <= 4; i++)
+    #     print collect(i, all_keys)
+    # for (i in r)
+    #     print i,r[i]
 }
 
 function collect(c,keys,    cidx,rk,i,d,nk,res) {
@@ -61,11 +66,13 @@ function collect(c,keys,    cidx,rk,i,d,nk,res) {
 function distance(a,b) {
     if (!(a "," b in dist))
         map_distance(k[a], k[b])
+    print a,b,dist[a "," b]
     return dist[a "," b]
 }
 
-function reachable(o,keys,      c,coords,cx,cy,s,n,i) {
-    if (keys in r) return r[keys]
+function reachable(o,keys,      idx,c,coords,cx,cy,s,n,i) {
+    idx = o "," keys
+    if (idx in r) return r[idx]
     enqueue(k[o])
     while (length(q)) {
         c = dequeue()
@@ -83,17 +90,17 @@ function reachable(o,keys,      c,coords,cx,cy,s,n,i) {
                     enqueue(n[i])
                 } else if (v[n[i]] ~ /[a-z]/) {
                     if (keys ~ v[n[i]])
-                        r[keys] = r[keys] v[n[i]]
+                        r[idx] = r[idx] v[n[i]]
                     else
                         enqueue(n[i])
-                } else if (v[n[i]] ~ /\.|@/) {
+                } else if (v[n[i]] ~ /\.|[1-4]/) {
                     enqueue(n[i])
                 }
             }
         }
     }
     empty_queue()
-    return r[keys]
+    return r[idx]
 }
 
 function map_distance(a,b,     c,coords,cx,cy,steps,s,n,i) {
@@ -104,9 +111,9 @@ function map_distance(a,b,     c,coords,cx,cy,steps,s,n,i) {
     }
     split(a,ac,",")
     split(b,bc,",")
-    if ((ac[1] < ox && bc[1] > ox) \
-    ||  (ac[1] > ox && bc[1] < ox) \
-    ||  (ac[2] < oy && bc[2] > oy) \
+    if ((ac[1] < ox && bc[1] > ox)  \
+    ||  (ac[1] > ox && bc[1] < ox)  \
+    ||  (ac[2] < oy && bc[2] > oy)  \
     ||  (ac[2] > oy && bc[2] < oy)) {
         dist[v[a] "," v[b]] = 0
         dist[v[b] "," v[a]] = 0
