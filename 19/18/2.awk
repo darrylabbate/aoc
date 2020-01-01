@@ -18,8 +18,16 @@ BEGIN {
 }
 
 END {
-    for (i in k)
-        all_keys = all_keys i
+    for (i in k) {
+        split(k[i],kc,",")
+        if (kc[1] < ox) {
+            if (kc[2] < oy) keys[1] = keys[1] i
+            else            keys[3] = keys[3] i
+        } else {
+            if (kc[2] < oy) keys[2] = keys[2] i
+            else            keys[4] = keys[4] i
+        }
+    }
     v[ox-1 "," oy-1] = 1
     v[ox   "," oy-1] = "#"
     v[ox+1 "," oy-1] = 2
@@ -33,18 +41,9 @@ END {
     k[2] = ox+1 "," oy-1
     k[3] = ox-1 "," oy+1
     k[4] = ox+1 "," oy+1
-    # for (y = 1; y <= NF; y++) {
-    #     for (x = 1; x <= NR; x++) {
-    #         printf v[x "," y]
-    #     }
-    #     printf "\n"
-    # }
-    # for (i = 1; i <= 4; i++)
-    #     print distance(i, "f")
-    # for (i = 1; i <= 4; i++)
-    #     print collect(i, all_keys)
-    # for (i in r)
-    #     print i,r[i]
+    for (i = 1; i <= 4; i++)
+        d += collect(i, keys[i])
+    print d
 }
 
 function collect(c,keys,    cidx,rk,i,d,nk,res) {
@@ -66,7 +65,6 @@ function collect(c,keys,    cidx,rk,i,d,nk,res) {
 function distance(a,b) {
     if (!(a "," b in dist))
         map_distance(k[a], k[b])
-    print a,b,dist[a "," b]
     return dist[a "," b]
 }
 
@@ -105,16 +103,6 @@ function reachable(o,keys,      idx,c,coords,cx,cy,s,n,i) {
 
 function map_distance(a,b,     c,coords,cx,cy,steps,s,n,i) {
     if (a == b) {
-        dist[v[a] "," v[b]] = 0
-        dist[v[b] "," v[a]] = 0
-        return
-    }
-    split(a,ac,",")
-    split(b,bc,",")
-    if ((ac[1] < ox && bc[1] > ox)  \
-    ||  (ac[1] > ox && bc[1] < ox)  \
-    ||  (ac[2] < oy && bc[2] > oy)  \
-    ||  (ac[2] > oy && bc[2] < oy)) {
         dist[v[a] "," v[b]] = 0
         dist[v[b] "," v[a]] = 0
         return
