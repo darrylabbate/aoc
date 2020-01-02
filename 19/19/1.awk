@@ -4,10 +4,8 @@ BEGIN {
 }
 
 function inp() {
-    if (++input % 2 == 1)
-        p[rx] = xc++
-    else
-        p[rx] = yc
+    if (++input % 2) p[rx] = xc++
+    else             p[rx] = yc
 
     if (xc > 49) {
         if (++yc > 49) {
@@ -23,17 +21,15 @@ function out() {
 }
 
 function init() {
-    i = 0
-    for (j = 0; j < l; j++)
-        p[j] = t[j+1]
-}
-
-{
-    l = split($0,t,",")
     for (j = 0; j < l; j++)
         p[j] = t[j+1]
     os = 0
     i  = 0
+}
+
+{
+    l = split($0,t,",")
+    init()
     while (1) {
         op  = p[i]
         xm  = int(op/100)   % 10
