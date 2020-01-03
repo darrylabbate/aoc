@@ -54,22 +54,21 @@ END {
             }
         }
     }
-    print traverse("AA","ZZ",0)
+    print traverse("AA","ZZ",0,0)
 }
 
-function traverse(a,b,l,      c,coords,cx,cy,steps,s,n,i) {
-    enqueue(p[a] "," l)
-    steps[a "," l] = 0
-    ml = l
+function traverse(a,b,l,lt,      c,coords,cx,cy,steps,s,n,i) {
+    enqueue(p[a] "," l "," lt)
+    steps[a] = 0
     while (length(q)) {
         c = dequeue()
         split(c,coords,",")
         cx = coords[1]
         cy = coords[2]
         l  = coords[3]
-        ml = ml < l ? l : ml
-        if (c == p[b] "," 0) {
-            return steps[cx "," cy] - ml
+        lt = coords[4]
+        if (cx "," cy == p[b] && !l) {
+            return steps[cx "," cy] - lt - 2
         } else {
             n[0] = cx+1 "," cy
             n[1] = cx-1 "," cy
@@ -82,14 +81,14 @@ function traverse(a,b,l,      c,coords,cx,cy,steps,s,n,i) {
                     if (m[n[i]] ~ /[0-9]/) {
                         n[i] = m[n[i]]
                         if (outer[n[i]])
-                            enqueue(n[i] "," l+1)
+                            enqueue(n[i] "," l+1 "," lt+1)
                         else if (inner[n[i]])
                             if (l > 0)
-                                enqueue(n[i] "," l-1)
+                                enqueue(n[i] "," l-1 "," lt+1)
                         steps[n[i]] = steps[cx "," cy] + 1
                     } else {
                         steps[n[i]] = steps[cx "," cy] + 1
-                        enqueue(n[i] "," l)
+                        enqueue(n[i] "," l "," lt)
                     }
                 }
             }
