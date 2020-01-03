@@ -39,13 +39,42 @@ END {
         if (m[i] ~ /[A-Z]/) {
             if (!p[m[i]]) {
                 p[m[i]] = i
-                # print i,m[i],p[m[i]]
             } else {
-                print i,m[i],p[m[i]]
-                t = m[i]
-                m[i] = p[m[i]]
-                p[m[t]] = i
-                print i,m[i],p[m[i]]
+                t = p[m[i]]
+                m[t] = i
+                m[i] = t
+            }
+        }
+    }
+    print traverse("AA","ZZ")
+}
+
+function traverse(a,b,      c,coords,cx,cy,steps,s,n,i) {
+    enqueue(p[a])
+    steps[a] = 0
+    while (length(q)) {
+        c = dequeue()
+        if (c == p[b]) {
+            return steps[c] - 2
+        } else {
+            split(c,coords,",")
+            cx = coords[1]
+            cy = coords[2]
+            n[0] = cx+1 "," cy
+            n[1] = cx-1 "," cy
+            n[2] = cx   "," cy+1
+            n[3] = cx   "," cy-1
+            for (i in n) {
+                if (!s[n[i]] && m[n[i]] != "#" && m[n[i]] != " ") {
+                    s[n[i]] = 1
+                    if (m[n[i]] ~ /[0-9]/) {
+                        n[i] = m[n[i]]
+                        steps[n[i]] = steps[c]
+                    } else {
+                        steps[n[i]] = steps[c] + 1
+                    }
+                    enqueue(n[i])
+                }
             }
         }
     }
