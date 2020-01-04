@@ -1,1 +1,5 @@
 https://adventofcode.com/2019/day/22
+
+NOTE: Part 2 only works when invoked with GNU AWK's bignum extension (-M):
+
+    $ gawk -M -f 2.gawk input
