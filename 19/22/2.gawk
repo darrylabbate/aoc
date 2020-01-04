@@ -36,30 +36,22 @@ function mod(x,n) {
     return x
 }
 
-function comb(a1,b1,a2,b2) {
-    bb = mod(a1*b2+b1,n)
-    aa = mod(a1*a2,n)
-}
-
-function fcomb(a1,b1,a2,b2) {
-    fb = mod(a1*b2+b1,n)
-    fa = mod(a1*a2,n)
-}
-
 function shuf(l) {
-    fa = a
-    fb = b
+    ra = a
+    rb = b
     tc = 1
     while (tc < l) {
         aa = a
         bb = b
         c  = 1
         while ((2*c) <= (l-tc)) {
-            comb(aa,bb,aa,bb)
+            bb = mod(aa*bb+bb,n)
+            aa = mod(aa^2,n)
             c *= 2
         }
-        fcomb(aa,bb,fa,fb)
+        rb = mod(aa*rb+bb,n)
+        ra = mod(aa*ra,n)
         tc += c
     }
-    return mod(fa*p+fb,n)
+    return mod(ra*p+rb,n)
 }
