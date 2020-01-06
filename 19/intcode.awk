@@ -46,5 +46,6 @@ function out() {
         else if (op == 7) { p[rz] = x <  y; i += 4 }
         else if (op == 8) { p[rz] = x == y; i += 4 }
         else if (op == 9) { os += x;        i += 2 }
+        i = i == "" ? 0 : i
     }
 }
