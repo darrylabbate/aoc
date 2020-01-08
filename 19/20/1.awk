@@ -18,19 +18,19 @@ END {
             y = c[2]
             if (m[x "," y+1] ~ /[A-Z]/) {
                 if (m[x "," y+2] == ".") {
-                    m[x "," y+1] = m[i] m[x "," y+1]
-                    m[i] = " "
+                    m[x "," y+2] = m[i] m[x "," y+1]
+                    m[x "," y+1] = m[i] = " "
                 } else if (m[x "," y-1] == ".") {
-                    m[i] = m[i] m[x "," y+1]
-                    m[x "," y+1] = " "
+                    m[x "," y-1] = m[i] m[x "," y+1]
+                    m[x "," y+1] = m[i] = " "
                 }
             } else if (m[x+1 "," y] ~ /[A-Z]/) {
                 if (m[x+2 "," y] == ".") {
-                    m[x+1 "," y] = m[i] m[x+1 "," y]
-                    m[i] = " "
+                    m[x+2 "," y] = m[i] m[x+1 "," y]
+                    m[x+1 "," y] = m[i] = " "
                 } else if (m[x-1 "," y] == ".") {
-                    m[i] = m[i] m[x+1 "," y]
-                    m[x+1 "," y] = " "
+                    m[x-1 "," y] = m[i] m[x+1 "," y]
+                    m[x+1 "," y] = m[i] = " "
                 }
             }
         }
@@ -55,7 +55,7 @@ function traverse(a,b,      c,coords,cx,cy,steps,s,n,i) {
     while (length(q)) {
         c = dequeue()
         if (c == p[b]) {
-            return steps[c] - 2
+            return steps[c]
         } else {
             split(c,coords,",")
             cx = coords[1]
@@ -69,7 +69,7 @@ function traverse(a,b,      c,coords,cx,cy,steps,s,n,i) {
                     s[n[i]] = 1
                     if (m[n[i]] ~ /[0-9]/) {
                         n[i] = m[n[i]]
-                        steps[n[i]] = steps[c]
+                        steps[n[i]] = steps[c] + 2
                     } else {
                         steps[n[i]] = steps[c] + 1
                     }
