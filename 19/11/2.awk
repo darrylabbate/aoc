@@ -1,9 +1,9 @@
-BEGIN { inp = inp ? inp : 1 }
+BEGIN { inp = 1 }
 
-function halt() {
-    for (j = 0; j >= -5; j--) {
-        for (i = 1; i <= 40; i++) {
-            printf "%s", hull[i "," j]
+function print_hull() {
+    for (y = 0; y >= -5; y--) {
+        for (x = 1; x <= 40; x++) {
+            printf "%s", hull[x,y]
         }
         printf "\n"
     }
@@ -14,7 +14,7 @@ function out() {
         if (x) color = "#"
         else   color = " "
     } else {
-        hull[x1 "," y1] = color
+        hull[x1,y1] = color
         if (d == 0) {
             if (x) { d = 1; ++x1 }
             else   { d = 3; --x1 }
@@ -29,7 +29,7 @@ function out() {
             else   { d = 2; --y1 }
         }
     }
-    inp = hull[x1 "," y1] == "#"
+    inp = hull[x1,y1] == "#"
 }
 
 {
@@ -41,7 +41,7 @@ function out() {
     x1 = 0
     y1 = 0
     d  = 0
-    while (1) {
+    while (op < 99) {
         op  = p[i]
         xm  = int(op/100)   % 10
         ym  = int(op/1000)  % 10
@@ -51,16 +51,15 @@ function out() {
         y   = ym == 1 ? p[i+2] : ym == 2 ? p[p[i+2]+os] : p[p[i+2]]
         rx  = xm ? p[i+1]+os : p[i+1]
         rz  = zm ? p[i+3]+os : p[i+3]
-        if      (op == 1)  { p[rz] = x + y;             i += 4 }
-        else if (op == 2)  { p[rz] = x * y;             i += 4 }
-        else if (op == 3)  { p[rx] = inp;               i += 2 }
-        else if (op == 4)  { out();                     i += 2 }
-        else if (op == 5)  { i =  x ? y :               i +  3 }
-        else if (op == 6)  { i = !x ? y :               i +  3 }
-        else if (op == 7)  { p[rz] = x <  y;            i += 4 }
-        else if (op == 8)  { p[rz] = x == y;            i += 4 }
-        else if (op == 9)  { os += x;                   i += 2 }
-        else if (op == 99) { halt();                    exit 0 }
-        else               { print "input error";       exit 1 }       
+        if      (op == 1)  { p[rz] = x + y;  i += 4 }
+        else if (op == 2)  { p[rz] = x * y;  i += 4 }
+        else if (op == 3)  { p[rx] = inp;    i += 2 }
+        else if (op == 4)  { out();          i += 2 }
+        else if (op == 5)  { i =  x ? y :    i +  3 }
+        else if (op == 6)  { i = !x ? y :    i +  3 }
+        else if (op == 7)  { p[rz] = x <  y; i += 4 }
+        else if (op == 8)  { p[rz] = x == y; i += 4 }
+        else if (op == 9)  { os += x;        i += 2 }
     }
+    print_hull()
 }

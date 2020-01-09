@@ -1,23 +1,23 @@
-BEGIN { inp = inp ? inp : 1 }
+BEGIN { inp = 1 }
 
 function out() {
     if (!x) {
         if (d == 1) {
-            o[dx "," dy+1]--
-            if (!o[dx-1 "," dy]) d = 3
-            else                 d = 4
+            o[dx,dy+1]--
+            if (!o[dx-1,dy]) d = 3
+            else             d = 4
         } else if (d == 2) {
-            o[dx "," dy-1]--
-            if (!o[dx+1 "," dy]) d = 4
-            else                 d = 3
+            o[dx,dy-1]--
+            if (!o[dx+1,dy]) d = 4
+            else             d = 3
         } else if (d == 3) {
-            o[dx-1 "," dy]--
-            if (!o[dx "," dy-1]) d = 2
-            else                 d = 1
+            o[dx-1,dy]--
+            if (!o[dx,dy-1]) d = 2
+            else             d = 1
         } else {
-            o[dx+1 "," dy]--
-            if (!o[dx "," dy+1]) d = 1
-            else                 d = 2
+            o[dx+1,dy]--
+            if (!o[dx,dy+1]) d = 1
+            else             d = 2
         }
     } else if (x == 1) {
         if      (d == 1) ++dy
@@ -27,10 +27,10 @@ function out() {
 
         d += d < 3 ? 2 : -((d * 2) % 5)
 
-        if (!o[dx "," dy]) ++c
-        else               --c
+        if (!o[dx,dy]) ++c
+        else           --c
 
-        o[dx "," dy]++
+        o[dx,dy]++
     } else if (x == 2) {
         print ++c
         exit 0

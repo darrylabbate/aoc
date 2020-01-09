@@ -7,38 +7,38 @@ BEGIN {
 
 {
     for (i = 1; i <= NF; i++)
-        m[i "," NR] = $i
+        m[i,NR] = $i
 }
 
 END {
     for (i in m) {
         if (m[i] ~ /[A-Z]/) {
-            split(i,c,",")
+            split(i,c,SUBSEP)
             x = c[1]
             y = c[2]
-            if (m[x "," y+1] ~ /[A-Z]/) {
-                if (m[x "," y+2] == ".") {
-                    m[x "," y+2] = m[i] m[x "," y+1]
-                    m[x "," y+1] = m[i] = " "
-                    if (y == 1) outer[x "," y+2] = 1
-                    else        inner[x "," y+2] = 1
-                } else if (m[x "," y-1] == ".") {
-                    m[x "," y-1] = m[i] m[x "," y+1]
-                    m[x "," y+1] = m[i] = " "
-                    if (y == NR-1) outer[x "," y-1] = 1
-                    else           inner[x "," y-1] = 1
+            if (m[x,y+1] ~ /[A-Z]/) {
+                if (m[x,y+2] == ".") {
+                    m[x,y+2] = m[i] m[x,y+1]
+                    m[x,y+1] = m[i] = " "
+                    if (y == 1) outer[x,y+2] = 1
+                    else        inner[x,y+2] = 1
+                } else if (m[x,y-1] == ".") {
+                    m[x,y-1] = m[i] m[x,y+1]
+                    m[x,y+1] = m[i] = " "
+                    if (y == NR-1) outer[x,y-1] = 1
+                    else           inner[x,y-1] = 1
                 }
-            } else if (m[x+1 "," y] ~ /[A-Z]/) {
-                if (m[x+2 "," y] == ".") {
-                    m[x+2 "," y] = m[i] m[x+1 "," y]
-                    m[x+1 "," y] = m[i] = " "
-                    if (x == 1) outer[x+2 "," y] = 1
-                    else        inner[x+2 "," y] = 1
-                } else if (m[x-1 "," y] == ".") {
-                    m[x-1 "," y] = m[i] m[x+1 "," y]
-                    m[x+1 "," y] = m[i] = " "
-                    if (x == NF-1) outer[x-1 "," y] = 1
-                    else           inner[x-1 "," y] = 1
+            } else if (m[x+1,y] ~ /[A-Z]/) {
+                if (m[x+2,y] == ".") {
+                    m[x+2,y] = m[i] m[x+1,y]
+                    m[x+1,y] = m[i] = " "
+                    if (x == 1) outer[x+2,y] = 1
+                    else        inner[x+2,y] = 1
+                } else if (m[x-1,y] == ".") {
+                    m[x-1,y] = m[i] m[x+1,y]
+                    m[x+1,y] = m[i] = " "
+                    if (x == NF-1) outer[x-1,y] = 1
+                    else           inner[x-1,y] = 1
                 }
             }
         }
@@ -58,35 +58,35 @@ END {
 }
 
 function traverse(a,b,l,lt,      c,coords,cx,cy,steps,s,n,i) {
-    enqueue(p[a] "," l "," lt)
+    enqueue(p[a] SUBSEP l SUBSEP lt)
     steps[a] = 0
     while (length(q)) {
         c = dequeue()
-        split(c,coords,",")
+        split(c,coords,SUBSEP)
         cx = coords[1]
         cy = coords[2]
         l  = coords[3]
         lt = coords[4]
-        if (cx "," cy == p[b] && !l) {
-            return steps[cx "," cy] + lt
+        if (cx SUBSEP cy == p[b] && !l) {
+            return steps[cx,cy] + lt
         } else {
-            n[0] = cx+1 "," cy
-            n[1] = cx-1 "," cy
-            n[2] = cx   "," cy+1
-            n[3] = cx   "," cy-1
+            n[0] = cx+1 SUBSEP cy
+            n[1] = cx-1 SUBSEP cy
+            n[2] = cx   SUBSEP cy+1
+            n[3] = cx   SUBSEP cy-1
             for (i in n) {
-                if (!s[n[i] "," l] && m[n[i]] != "#" && m[n[i]] != " ") {
-                    s[n[i] "," l] = 1
+                if (!s[n[i],l] && m[n[i]] != "#" && m[n[i]] != " ") {
+                    s[n[i],l] = 1
                     if (m[n[i]] ~ /[0-9]/) {
                         n[i] = m[n[i]]
                         if (outer[n[i]])
-                            enqueue(n[i] "," l+1 "," lt+1)
+                            enqueue(n[i] SUBSEP l+1 SUBSEP lt+1)
                         else if (inner[n[i]] && l > 0)
-                            enqueue(n[i] "," l-1 "," lt+1)
-                        steps[n[i]] = steps[cx "," cy] + 1
+                            enqueue(n[i] SUBSEP l-1 SUBSEP lt+1)
+                        steps[n[i]] = steps[cx,cy] + 1
                     } else {
-                        steps[n[i]] = steps[cx "," cy] + 1
-                        enqueue(n[i] "," l "," lt)
+                        steps[n[i]] = steps[cx,cy] + 1
+                        enqueue(n[i] SUBSEP l SUBSEP lt)
                     }
                 }
             }

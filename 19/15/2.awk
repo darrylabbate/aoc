@@ -1,23 +1,23 @@
-BEGIN { inp = inp ? inp : 1 }
+BEGIN { inp = 1 }
 
 function out() {
     if (!x) {
         if (d == 1) {
-            o[dx "," dy+1]--
-            if (!o[dx-1 "," dy]) d = 3
-            else                 d = 4
+            o[dx,dy+1]--
+            if (!o[dx-1,dy]) d = 3
+            else             d = 4
         } else if (d == 2) {
-            o[dx "," dy-1]--
-            if (!o[dx+1 "," dy]) d = 4
-            else                 d = 3
+            o[dx,dy-1]--
+            if (!o[dx+1,dy]) d = 4
+            else             d = 3
         } else if (d == 3) {
-            o[dx-1 "," dy]--
-            if (!o[dx "," dy-1]) d = 2
-            else                 d = 1
+            o[dx-1,dy]--
+            if (!o[dx,dy-1]) d = 2
+            else             d = 1
         } else {
-            o[dx+1 "," dy]--
-            if (!o[dx "," dy+1]) d = 1
-            else                 d = 2
+            o[dx+1,dy]--
+            if (!o[dx,dy+1]) d = 1
+            else             d = 2
         }
     } else {
         if      (d == 1) ++dy
@@ -27,24 +27,24 @@ function out() {
 
         d += d < 3 ? 2 : -((d * 2) % 5)
 
-        if (!o[dx "," dy]) ++c
-        else               --c
+        if (!o[dx,dy]) ++c
+        else           --c
 
-        o[dx "," dy] = c
+        o[dx,dy] = c
     }
 
     if (x == 2) {
         if (++s == 1) {
             for (ay = 21; ay > -20; ay--)
                 for (ax = -21; ax < 20; ax++)
-                    if (o[ax "," ay] > 0)
-                        o[ax "," ay] = 0
+                    if (o[ax,ay] > 0)
+                        o[ax,ay] = 0
             c = 0
         } else if (s > 2) {
             max = 0
             for (ay = 21; ay > -20; ay--)
                 for (ax = -21; ax < 20; ax++)
-                    max = o[ax "," ay] > max ? o[ax "," ay] : max
+                    max = o[ax,ay] > max ? o[ax,ay] : max
             print max
             exit 0
         }

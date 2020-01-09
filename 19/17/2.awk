@@ -70,57 +70,57 @@ function compress(str,      i, j, k) {
 function map_path() {
     tx = sx
     ty = sy
-    if (s[tx-1 "," ty]) { bp = "L"; dir = 4 }
-    else                { bp = "R"; dir = 2 }
+    if (s[tx-1,ty]) { bp = "L"; dir = 4 }
+    else            { bp = "R"; dir = 2 }
     while (!eop) {
         st = 0
         if (dir == 1) {
-            if (s[tx "," ty-1]) {
-                for (; s[tx "," ty-1]; ty--) st++
+            if (s[tx,ty-1]) {
+                for (; s[tx,ty-1]; ty--) st++
                 bp = bp "," st
-            } else if (s[tx-1 "," ty]) {
+            } else if (s[tx-1,ty]) {
                 bp = bp ",L"
                 dir = 4
-            } else if (s[tx+1 "," ty]) {
+            } else if (s[tx+1,ty]) {
                 bp = bp ",R"
                 dir = 2
             } else {
                 eop = 1
             }
         } else if (dir == 2) {
-            if (s[tx+1 "," ty]) {
-                for (; s[tx+1 "," ty]; tx++) st++
+            if (s[tx+1,ty]) {
+                for (; s[tx+1,ty]; tx++) st++
                 bp = bp "," st
-            } else if (s[tx "," ty-1]) {
+            } else if (s[tx,ty-1]) {
                 bp = bp ",L"
                 dir = 1
-            } else if (s[tx "," ty+1]) {
+            } else if (s[tx,ty+1]) {
                 bp = bp ",R"
                 dir = 3
             } else {
                 eop = 1
             }
         } else if (dir == 3) {
-            if (s[tx "," ty+1]) {
-                for (; s[tx "," ty+1]; ty++) st++
+            if (s[tx,ty+1]) {
+                for (; s[tx,ty+1]; ty++) st++
                 bp = bp "," st
-            } else if (s[tx-1 "," ty]) {
+            } else if (s[tx-1,ty]) {
                 bp = bp ",R"
                 dir = 4
-            } else if (s[tx+1 "," ty]) {
+            } else if (s[tx+1,ty]) {
                 bp = bp ",L"
                 dir = 2
             } else {
                 eop = 1
             }
         } else if (dir == 4) {
-            if (s[tx-1 "," ty]) {
-                for (; s[tx-1 "," ty]; tx--) st++
+            if (s[tx-1,ty]) {
+                for (; s[tx-1,ty]; tx--) st++
                 bp = bp "," st
-            } else if (s[tx "," ty-1]) {
+            } else if (s[tx,ty-1]) {
                 bp = bp ",R"
                 dir = 1
-            } else if (s[tx "," ty+1]) {
+            } else if (s[tx,ty+1]) {
                 bp = bp ",L"
                 dir = 3
             } else {
@@ -156,9 +156,9 @@ function out() {
         } else if (x == 94) {
             sx = vx
             sy = vy
-            s[vx++ "," vy] = 2
+            s[vx++,vy] = 2
         } else {
-            s[vx++ "," vy] = x == 35
+            s[vx++,vy] = x == 35
         }
     } else {
         if (x > 255) {

@@ -1,13 +1,11 @@
-BEGIN { inp = inp ? inp : 0 }
-
 function eval() {
     for (y = 0; y <= my; y++)
         for (x = 0; x <= mx; x++)
-            if (s[x "," y] == 35)
-                if (s[x "," y-1] == 35 \
-                &&  s[x "," y+1] == 35 \
-                &&  s[x-1 "," y] == 35 \
-                &&  s[x+1 "," y] == 35)
+            if (s[x,y] == 35)
+                if (s[x,y-1] == 35 \
+                &&  s[x,y+1] == 35 \
+                &&  s[x-1,y] == 35 \
+                &&  s[x+1,y] == 35)
                     a += x * y
     print a
     exit 0
@@ -19,7 +17,7 @@ function out() {
         mx = vx > mx ? vx : mx
         vx = 0
     } else {
-        s[vx++ "," vy] = x
+        s[vx++,vy] = x
     }
 }
 

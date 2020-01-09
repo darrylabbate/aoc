@@ -1,12 +1,12 @@
-BEGIN { inp = inp ? inp : 0 }
+BEGIN { inp = 0 }
 
 function out() {
     if (++c % 2 == 1) {
         if (x) color = "#"
         else   color = "."
     } else {
-        if (!(hull[x1 "," y1])) ++panels
-        hull[x1 "," y1] = color
+        if (!(hull[x1,y1])) ++panels
+        hull[x1,y1] = color
         if (d == 0) {
             if (x) { d = 1; ++x1 }
             else   { d = 3; --x1 }
@@ -21,7 +21,7 @@ function out() {
             else   { d = 2; --y1 }
         }
     }
-    inp = hull[x1 "," y1] == "#"
+    inp = hull[x1,y1] == "#"
 }
 
 {

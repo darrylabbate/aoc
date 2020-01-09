@@ -7,11 +7,11 @@ BEGIN {
 
 {
     for (i = 1; i <= NF; i++) {
-        v[i "," NR] = $i
+        v[i,NR] = $i
         if ($i ~ /[a-z]/)
-            k[$i]  = i "," NR
+            k[$i]  = i SUBSEP NR
         else if ($i == "@") 
-            origin = i "," NR
+            origin = i SUBSEP NR
     }
 }
 
@@ -23,8 +23,7 @@ END {
 
 function collect(c,keys,    cidx,rk,i,d,nk,res) {
     if (!keys) return 0
-    cidx = c "," keys
-    if (cidx in cache) return cache[cidx]
+    if ((c,keys) in cache) return cache[c,keys]
     res = 9999
     split(reachable(c,keys),rk,"")
     for (i in rk) {
@@ -33,15 +32,15 @@ function collect(c,keys,    cidx,rk,i,d,nk,res) {
         d = distance(c,rk[i]) + collect(rk[i],nk)
         res = res > d ? d : res
     }
-    cache[cidx] = res
+    cache[c,keys] = res
     return res
 }
 
 function distance(a,b) {
-    if (!(a "," b in dist))
+    if (!((a,b) in dist))
         map_distance(a == "@" ? origin : k[a],
                      b == "@" ? origin : k[b])
-    return dist[a "," b]
+    return dist[a,b]
 }
 
 function reachable(o,keys,      c,coords,cx,cy,s,n,i) {
@@ -49,13 +48,13 @@ function reachable(o,keys,      c,coords,cx,cy,s,n,i) {
     enqueue(o == "@" ? origin : k[o])
     while (length(q)) {
         c = dequeue()
-        split(c,coords,",")
+        split(c,coords,SUBSEP)
         cx = coords[1]
         cy = coords[2]
-        n[0] = cx+1 "," cy
-        n[1] = cx-1 "," cy
-        n[2] = cx   "," cy+1
-        n[3] = cx   "," cy-1
+        n[0] = cx+1 SUBSEP cy
+        n[1] = cx-1 SUBSEP cy
+        n[2] = cx   SUBSEP cy+1
+        n[3] = cx   SUBSEP cy-1
         for (i in n) {
             if (!s[n[i]] && v[n[i]] != "#") {
                 s[n[i]] = 1
@@ -78,8 +77,8 @@ function reachable(o,keys,      c,coords,cx,cy,s,n,i) {
 
 function map_distance(a,b,     c,coords,cx,cy,steps,s,n,i) {
     if (a == b) {
-        dist[v[a] "," v[b]] = 0
-        dist[v[b] "," v[a]] = 0
+        dist[v[a],v[b]] = 0
+        dist[v[b],v[a]] = 0
         return
     }
     enqueue(a)
@@ -87,17 +86,17 @@ function map_distance(a,b,     c,coords,cx,cy,steps,s,n,i) {
     while (length(q)) {
         c = dequeue()
         if (c == b) {
-            dist[v[a] "," v[b]] = steps[b]
-            dist[v[b] "," v[a]] = steps[b]
+            dist[v[a],v[b]] = steps[b]
+            dist[v[b],v[a]] = steps[b]
             empty_queue()
         } else {
-            split(c,coords,",")
+            split(c,coords,SUBSEP)
             cx = coords[1]
             cy = coords[2]
-            n[0] = cx+1 "," cy
-            n[1] = cx-1 "," cy
-            n[2] = cx   "," cy+1
-            n[3] = cx   "," cy-1
+            n[0] = cx+1 SUBSEP cy
+            n[1] = cx-1 SUBSEP cy
+            n[2] = cx   SUBSEP cy+1
+            n[3] = cx   SUBSEP cy-1
             for (i in n) {
                 if (!s[n[i]] && v[n[i]] != "#") {
                     s[n[i]] = 1
