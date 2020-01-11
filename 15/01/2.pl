@@ -1,13 +1,11 @@
-while (<>) {
-    @b = split("");
-    foreach $i (@b) {
-        $c++;
-        $f += ($i eq '(');
-        $f -= ($i eq ')');
-        if ($f == -1 && !$r) {
-            $r = $c;
-        }
+while (<>) { @b = split //; }
+
+for (values @b) {
+    $c++;
+    $f += ($_ eq '(');
+    $f -= ($_ eq ')');
+    if ($f == -1) {
+        print "$c\n";
+        exit;
     }
 }
-
-print "$r\n";

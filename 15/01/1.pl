@@ -1,9 +1,8 @@
-while (<>) {
-    @b = split("");
-    foreach $i (@b) {
-        $f += ($i eq '(');
-        $f -= ($i eq ')');
-    }
+while (<>) { @b = split //; }
+
+for (values @b) {
+    $f += $_ eq '(';
+    $f -= $_ eq ')';
 }
 
 print "$f\n";
