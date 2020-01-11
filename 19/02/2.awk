@@ -1,22 +1,23 @@
-function c(p,n,v) {
-    l    = split(p,m,",")
-    m[2] = n
-    m[3] = v
-    for (i = 1; i < l; i += 4) {
-        if (m[i] == "1")
-            m[m[i+3]+1] = m[m[i+1]+1] + m[m[i+2]+1]
-        else if (m[i] == "2")
-            m[m[i+3]+1] = m[m[i+1]+1] * m[m[i+2]+1]
-        else if (m[i] == "99")
-            return m[1]
+BEGIN { FS = "," }
+
+function c(m,n,v,   o,i) {
+    split(m,p)
+    p[2] = n
+    p[3] = v
+    while (o < 3) {
+        o = p[++i]
+        x = p[p[++i]+1]
+        y = p[p[++i]+1]
+        p[p[++i]+1] = o < 2 ? x + y : x * y
     }
+    return p[1]
 }
 
 END {
     for (n = 1; n < 99; n++)
         for (v = 1; v < 99; v++)
             if (c($0,n,v) == "19690720") {
-                print (100 * n + v)
+                print 100 * n + v
                 exit
             }
 }
