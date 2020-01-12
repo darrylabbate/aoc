@@ -1,19 +1,21 @@
 while (<>) {
-    @f = split('[ ,]');
-    if (/(on|off)/) { toggle($f[1], $f[2], $f[3], $f[5], $f[6]); }
-    else            { toggle($f[1], $f[2], $f[4], $f[5]);        }
+    /(toggle|turn on|turn off) (\d+),(\d+) through (\d+),(\d+)/;
+    toggle($1, $2, $3, $4, $5);
 }
 
 sub toggle {
-    $t = (@_ == 4);
-    $m = (@_ >  4) ? shift : 0;
-    for $y ($_[1]..$_[3]) {
-        for $x ($_[0]..$_[2]) {
-            if ($t) { $l{$x,$y} = (!$l{$x,$y}); }
-            else    { $l{$x,$y} = ($m =~ /on/); }
+    my ($c, $x1, $y1, $x2, $y2) = @_;
+    if ($c =~ m/^tog/) {
+        $c = 2;
+    } else {
+        $c = ($c =~ m/on/);
+    }
+    for $y ($y1..$y2) {
+        for $x ($x1..$x2) {
+            $l{$x,$y} = $c > 1 ? (!$l{$x,$y}) : $c;
         }
     }
 }
 
-for $v (values %l) { $o += $v; }
+$o += $_ for (values %l);
 print "$o\n"
