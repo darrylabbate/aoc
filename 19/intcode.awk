@@ -1,47 +1,9 @@
-# Intcode implementation
-# Assemble, disassemble and interpret an Intcode program
+# Intcode assembler, disassembler and interpreter
 #
-# Run a program (default):
-#   awk -f intcode.awk file
-#
-# Disassemble a program:
-#   awk -v d=1 -f intcode.awk file
-#
-# Run a program with disassembly output (verbose):
-#   awk -v v=1 -f intcode.awk file
-#
-# `file` can be either an Intcode program in the form of:
-#   109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99
-#
-# ...or in an arbitrary asm syntax, mostly resembling GNU/gas syntax:
-#   rel   1
-#   out   *(-1+OFFSET)
-#   add   *100, 1, *100
-#   eq    *100, 16, *101
-#   jf    *101
-#   halt
-# where *N represents a parameter in position mode (1) and
-# *(N+OFFSET) represents a parameter in relative mode (2).
-#
-# Instructions (opcode):
-#   add  (1)
-#   mul  (2)
-#   in   (3)
-#   out  (4)
-#   jt   (5)
-#   jf   (6)
-#   lt   (7)
-#   eq   (8)
-#   rel  (9)
-#   halt (99)
-#
-# Both file formats can be interpreted as standard Intcode programs.
-# Disassembling a file (dump) will not modify any values; it will only
-# parse the program as-is, outputting in an asm format. Running a
-# program in verbose mode will modify values as expected.
-#
-# Currently there is no support for hardcoding values not used by an
-# instruction. Comments are also not currently supported.
+# USAGE:
+#   awk -f intcode.awk file         | Interpret a program
+#   awk -v d=1 -f intcode.awk file  | Disassemble (similar to objdump -d)
+#   awk -v v=1 -f intcode.awk file  | Interpret in verbose mode
 
 BEGIN {
     FS      = "[, ]*"
@@ -111,6 +73,7 @@ function interpret(intcode) {
     if (dump || verbose)
         printf "\n%s (%d ints, %s) %s\n\n", FILENAME, l, format, mode
     while (i < l) {
+        opcount++
         rop = op = p[i]
         xm  = int(op/100)   % 10
         ym  = int(op/1000)  % 10
@@ -202,11 +165,15 @@ function interpret(intcode) {
                 print_ops()
                 if (output_str)
                     printf "\nOutput: %s\n", output_str
-                i++
             }
-            if (!dump) exit 0
-        } else if (dump)
             i++
+            if (verbose)
+                printf "Op count: %d\n", opcount
+            if (!dump) exit 0
+        } else if (dump) {
+            i++
+            opcount--
+        }
         if (!dump)
             i = i == "" ? 0 : i
     }
