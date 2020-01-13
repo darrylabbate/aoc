@@ -7,10 +7,12 @@
 
 BEGIN {
     FS      = "[, ]*"
+    OFMT    = "%.f"
     dump    = d ? d : 0
     verbose = v ? v : 0
     mode    = dump ? "DUMP" : "VERBOSE"
     inp     = inp ? inp : 0
+    os_str  = "OFFSET"
     split("add mul in out jt jf lt eq rel", opname)
     opname[99] = "halt"
     for (i in opname)
@@ -26,12 +28,10 @@ opcode[$1] {
     format = "asm"
     if (!prog) prog =          full_op(opcode[$1],$2,$3,$4)
     else       prog = prog "," full_op(opcode[$1],$2,$3,$4)
-    if ($2) prog = prog "," param($2)
-    if ($3) prog = prog "," param($3)
-    if ($4) prog = prog "," param($4)
+    if ($2 != "") prog = prog "," param($2)
+    if ($3 != "") prog = prog "," param($3)
+    if ($4 != "") prog = prog "," param($4)
 }
-
-END { interpret(prog) }
 
 function param(p) {
     gsub("[^[:digit:]-]+", "", p)
@@ -39,10 +39,10 @@ function param(p) {
 }
 
 function full_op(op,c,b,a) {
-    if (!c) return op
+    if (c == "") return op
     else   c = (c ~ /OFF/) ? 2 : (c !~ /^\*/)
-    if (b) b = (b ~ /OFF/) ? 2 : (b !~ /^\*/)
-    if (a) a = (a ~ /OFF/) ? 2 : (a !~ /^\*/)
+    if (b != "") b = (b ~ /OFF/) ? 2 : (b !~ /^\*/)
+    if (a != "") a = (a ~ /OFF/) ? 2 : (a !~ /^\*/)
 
     if (c) op = c 0 op
     if (b) op = c ? b op : b 0 0 op
@@ -51,23 +51,32 @@ function full_op(op,c,b,a) {
     return op
 }
 
-function print_ops(p1,p2,p3) {
-    if      (l < 10)    printf "%1d:  ", i
-    else if (l < 100)   printf "%2d:  ", i
-    else if (l < 1000)  printf "%3d:  ", i
-    else if (l < 10000) printf "%4d:  ", i
-    else                printf "%5d:  ", i
-    printf "%5d    %-6s", rop, opname[op]
-    if (p1) printf "%s", p1
-    if (p2) printf ", %s", p2
-    if (p3) printf ", %s", p3
+END { interpret(prog) }
+
+function print_ops(p1,p2,p3,    p_str) {
+    printf "%*d:  ", l_digits, i
+    printf "%5d ", rop
+    if (p1 != "") p_str = p[i+1]
+    if (p2 != "") p_str = p_str " " p[i+2]
+    if (p3 != "") p_str = p_str " " p[i+3]
+    printf "%-16s ", p_str
+    printf "%-6s", opname[op]
+    if (p1 != "") printf "%s", p1
+    if (p2 != "") printf ", %s", p2
+    if (p3 != "") printf ", %s", p3
     printf "\n"
+}
+
+function rel_str(p,os) {
+    os_op = p >= 0 ? "+" : ""
+    return "*(" os os_op p ")"
 }
 
 function interpret(intcode) {
     l = split(intcode,t)
     for (j = 0; j < l; j++)
         p[j] = t[j+1]
+    l_digits = length(l)
     os = 0
     i  = 0
     if (dump || verbose)
@@ -83,34 +92,35 @@ function interpret(intcode) {
         y   = ym == 1 ? p[i+2] : ym == 2 ? p[p[i+2]+os] : p[p[i+2]]
         rx  = xm ? p[i+1]+os : p[i+1]
         rz  = zm ? p[i+3]+os : p[i+3]
+        p[rz] = p[rz] == "" ? 0 : p[rz]
         if (verbose) {
-            px  = xm == 1 ? p[i+1]                                \
-                : xm == 2 ? "*(" p[i+1] "+" os ")->" p[p[i+1]+os] \
-                : "*" p[i+1] "->" p[p[i+1]]
-            py  = ym == 1 ? p[i+2]                                \
-                : ym == 2 ? "*(" p[i+2] "+" os ")->" p[p[i+2]+os] \
-                : "*" p[i+2] "->" p[p[i+2]]
-            pz  = zm ? "*(" p[i+3] "+" os ")->" p[p[i+3]+os]      \
-                : "*" p[i+3] "->" p[p[i+3]]
+            px  = xm == 1 ? x                         \
+                : xm == 2 ? rel_str(p[i+1],os) "->" x \
+                : "*" p[i+1] "->" x
+            py  = ym == 1 ? y                         \
+                : ym == 2 ? rel_str(p[i+2],os) "->" y \
+                : "*" p[i+2] "->" y
+            pz  = zm ? rel_str(p[i+3],os) "->" p[rz]  \
+                : "*" p[i+3] "->" p[rz]
         } else if (dump) {
-            px  = xm == 1 ? p[i+1]                 \
-                : xm == 2 ? "*(" p[i+1] "+OFFSET)" \
+            px  = xm == 1 ? x                       \
+                : xm == 2 ? rel_str(p[i+1], os_str) \
                 : "*" p[i+1]
-            py  = ym == 1 ? p[i+2]                 \
-                : ym == 2 ? "*(" p[i+2] "+OFFSET)" \
+            py  = ym == 1 ? y                       \
+                : ym == 2 ? rel_str(p[i+2], os_str) \
                 : "*" p[i+2]
-            pz  = zm ? "*(" p[i+3] "+OFFSET)"      \
+            pz  = zm ? rel_str(p[i+3], os_str)      \
                 : "*" p[i+3]
         }
         if (op == 1) {
             if (!dump)
-                p[rx] = x + y
+                p[rz] = x + y
             if (dump || verbose)
                 print_ops(px,py,pz)
             i += 4
         } else if (op == 2) {
             if (!dump)
-                p[rx] = x * y
+                p[rz] = x * y
             if (dump || verbose)
                 print_ops(px,py,pz)
             i += 4
@@ -121,7 +131,7 @@ function interpret(intcode) {
             i += 2
         } else if (op == 4) {
             if (!(dump || verbose)) {
-                printf "%.f\n", inp = x
+                printf "%.f\n", x
             } else {
                 print_ops(px)
                 if (!dump) {
@@ -164,11 +174,11 @@ function interpret(intcode) {
             if (dump || verbose) {
                 print_ops()
                 if (output_str)
-                    printf "\nOutput: %s\n", output_str
+                    printf "\nAll output: %s\n", output_str
             }
             i++
             if (verbose)
-                printf "Op count: %d\n", opcount
+                printf "Op count:   %d\n", opcount
             if (!dump) exit 0
         } else if (dump) {
             i++
