@@ -1,1 +1,1 @@
-BEGIN{FS=","}{v=0;while(o<99){o=$++i;a=int(o/100)%10;b=int(o/1000)%10;w=$++i+1+!!a*r;x=--a?$w:$i;y=$++i+1+!!b*r;y=--b?$y:$i;z=$++i+1+!(o<10^4)*r;o%=100;if(o==3)$w=v;if(o==4)printf"%.f\n",x;r+=o>8?x:0;if(o~/1|2|7|8/)$z=o<2?x+y:o<3?x*y:o==7?x<y:x==y;i=o==5?x?y:i-1:o==6?!x?y:i-1:o~/3|4|9/?i-2:i}}
+BEGIN{FS=","}{v=0;while(o<99){o=$++i;a=int(o/100)%10;b=int(o/1000)%10;w=$++i+1+!!a*r;x=--a?$w:$i;y=$++i+1+!!b*r;y=--b?$y:$i;z=$++i+1+!(o<10^4)*r;o%=100;if(o~3)$w=v;if(o~4)printf"%.f\n",x;r+=o>8?x:0;if(o~/1|2|7|8/)$z=o<2?x+y:o<3?x*y:o<8?x<y:x==y;else{--i;i=o~5?x?y:i:o~6?!x?y:i:i-1}}}
