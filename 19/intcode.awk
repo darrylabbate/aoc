@@ -7,12 +7,13 @@
 
 BEGIN {
     FS      = "[, ]*"
-    OFMT    = "%.f"
     dump    = d ? d : 0
     verbose = v ? v : 0
     mode    = dump ? "DUMP" : "VERBOSE"
-    inp     = inp ? inp : 0
     os_str  = "OFFSET"
+    inp     = inp ? inp : 0
+    v       = 1
+    split(inp, inpv)
     split("add mul in out jt jf lt eq rel", opname)
     opname[99] = "halt"
     for (i in opname)
@@ -125,7 +126,7 @@ function interpret(intcode) {
                 print_ops(px,py,pz)
             i += 4
         } else if (op == 3) {
-            p[rx] = inp
+            p[rx] = inpv[v++]
             if (dump || verbose)
                 print_ops(px)
             i += 2
