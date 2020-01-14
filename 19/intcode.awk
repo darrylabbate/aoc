@@ -158,12 +158,14 @@ function interpret(intcode) {
             else
                 i += 3
         } else if (op == 7) {
+            if (dump || verbose)
+                print_ops(px,py,pz)
             if (!dump) p[rz] = x < y
-            else       print_ops(px,py,pz)
             i += 4
         } else if (op == 8) {
+            if (dump || verbose)
+                print_ops(px,py,pz)
             if (!dump) p[rz] = x == y
-            else       print_ops(px,py,pz)
             i += 4
         } else if (op == 9) {
             os += x
