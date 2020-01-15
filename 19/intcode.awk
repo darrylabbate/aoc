@@ -6,7 +6,7 @@
 #   awk -v v=1 -f intcode.awk file  | Interpret in verbose mode
 
 BEGIN {
-    FS     = "[, ]*"
+    FS     = "[, \t]*"
     d      = d ? d : 0
     v      = v ? v : 0
     mode   = d ? "DUMP" : "INTERPRET"
@@ -24,8 +24,6 @@ BEGIN {
     prog   = $0
 }
 
-/nop/ { prog = prog "," $2 }
-
 opcode[$1] {
     format = "asm"
     if (!prog) prog =          full_op(opcode[$1],$2,$3,$4)
@@ -33,6 +31,11 @@ opcode[$1] {
     if ($2 != "") prog = prog "," param($2)
     if ($3 != "") prog = prog "," param($3)
     if ($4 != "") prog = prog "," param($4)
+}
+
+/nop/ {
+    if (!prog) prog = $2
+    else       prog = prog "," $2
 }
 
 function param(p) {
