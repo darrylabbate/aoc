@@ -65,8 +65,8 @@ function print_ops(p1,p2,p3,    p_str) {
         if (p3 != "") p_str = p_str " " p[i+3]
         printf "%-8s\t", p_str
     }
-    printf "%-6s", opname[op]
-    if (p1 != "") printf "%s", p1
+    printf "%s", opname[op]
+    if (p1 != "") printf "\t%s", p1
     if (p2 != "") printf ", %s", p2
     if (p3 != "") printf ", %s", p3
     printf "\n"
@@ -77,7 +77,7 @@ function print_nop(p1) {
         printf "%*d:        ", l_digits, i
         printf "%-8s\t", rop
     }
-    printf "nop   %s\n", p1
+    printf "nop\t%s\n", p1
 }
 
 function rel_str(p,rb) {
