@@ -24,6 +24,8 @@ BEGIN {
     prog   = $0
 }
 
+/nop/ { prog = prog "," $2 }
+
 opcode[$1] {
     format = "asm"
     if (!prog) prog =          full_op(opcode[$1],$2,$3,$4)
@@ -68,6 +70,14 @@ function print_ops(p1,p2,p3,    p_str) {
     if (p2 != "") printf ", %s", p2
     if (p3 != "") printf ", %s", p3
     printf "\n"
+}
+
+function print_nop(p1) {
+    if (v) {
+        printf "%*d:        ", l_digits, i
+        printf "%-8s\t", rop
+    }
+    printf "nop   %s\n", p1
 }
 
 function rel_str(p,rb) {
@@ -169,6 +179,6 @@ function dump(intcode) {
         else if (op == 8)  { print_ops(px,py,pz); i += 4 }
         else if (op == 9)  { print_ops(px);       i += 2 }
         else if (op == 99) { print_ops();         i++    }
-        else               {                      i++    }
+        else               { print_nop(rop);      i++    }
     }
 }
