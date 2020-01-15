@@ -6,14 +6,13 @@
 #   awk -v v=1 -f intcode.awk file  | Interpret in verbose mode
 
 BEGIN {
-    FS      = "[, ]*"
-    dump    = d ? d : 0
-    verbose = v ? v : 0
-    mode    = dump ? "DUMP" : ""
-    mode    = verbose ? mode " VERBOSE" : mode
-    rb_str  = "rb"
-    inp     = inp ? inp : 0
-    v       = 1
+    FS     = "[, ]*"
+    d      = d ? d : 0
+    v      = v ? v : 0
+    mode   = d ? "dump" : "interpret"
+    mode   = v ? mode " (VERBOSE)" : mode
+    rb_str = "rb"
+    inp    = inp ? inp : 0
     split(inp, inpv)
     split("add mul in out jt jf lt eq rel", opname)
     opname[99] = "halt"
@@ -45,18 +44,19 @@ function full_op(op,c,b,a) {
     else   c = (c ~ /rb/) ? 2 : (c !~ /^\*/)
     if (b != "") b = (b ~ /rb/) ? 2 : (b !~ /^\*/)
     if (a != "") a = (a ~ /rb/) ? 2 : (a !~ /^\*/)
-
     if (c) op = c 0 op
     if (b) op = c ? b op : b 0 0 op
     if (a) op = b ? a op : c ? a op : a 0 op
-
     return op
 }
 
-END { interpret(prog) }
+END {
+    if (d) dump(prog)
+    else   interpret(prog)
+}
 
 function print_ops(p1,p2,p3,    p_str) {
-    if (verbose) {
+    if (v) {
         printf "%*d:  ", l_digits, i
         printf "%5d ", rop
         if (p1 != "") p_str = p[i+1]
@@ -76,16 +76,20 @@ function rel_str(p,rb) {
     return p == 0 ? "*" rb : "*(" rb rb_op p ")"
 }
 
-function interpret(intcode) {
+function init(intcode) {
     l = split(intcode,t)
     for (j = 0; j < l; j++)
         p[j] = t[j+1]
     l_digits = length(l)
     rb = 0
     i  = 0
-    if (dump || verbose)
+}
+
+function interpret(intcode) {
+    init(intcode)
+    if (v)
         printf "\n%s (%d ints, %s) %s\n\n", FILENAME, l, format, mode
-    while (i < l) {
+    while (op < 99) {
         opcount++
         rop = op = p[i]
         xm  = int(op/100)   % 10
@@ -97,7 +101,7 @@ function interpret(intcode) {
         rx  = xm ? p[i+1]+rb : p[i+1]
         rz  = zm ? p[i+3]+rb : p[i+3]
         p[rz] = p[rz] == "" ? 0 : p[rz]
-        if (verbose) {
+        if (v) {
             px  = xm == 1 ? x                         \
                 : xm == 2 ? rel_str(p[i+1],rb) "->" x \
                 : "*" p[i+1] "->" x
@@ -106,91 +110,67 @@ function interpret(intcode) {
                 : "*" p[i+2] "->" y
             pz  = zm ? rel_str(p[i+3],rb) "->" p[rz]  \
                 : "*" p[i+3] "->" p[rz]
-        } else if (dump) {
-            px  = xm == 1 ? x                       \
-                : xm == 2 ? rel_str(p[i+1], rb_str) \
-                : "*" p[i+1]
-            py  = ym == 1 ? y                       \
-                : ym == 2 ? rel_str(p[i+2], rb_str) \
-                : "*" p[i+2]
-            pz  = zm ? rel_str(p[i+3], rb_str)      \
-                : "*" p[i+3]
-        }
-        if (op == 1) {
-            if (!dump)
-                p[rz] = x + y
-            if (dump || verbose)
-                print_ops(px,py,pz)
-            i += 4
-        } else if (op == 2) {
-            if (!dump)
-                p[rz] = x * y
-            if (dump || verbose)
-                print_ops(px,py,pz)
-            i += 4
-        } else if (op == 3) {
-            p[rx] = inpv[v++]
-            if (dump || verbose)
+            if      (op == 1)  { print_ops(px,py,pz); }
+            else if (op == 2)  { print_ops(px,py,pz); }
+            else if (op == 3)  { print_ops(px);       }
+            else if (op == 4)  {
                 print_ops(px)
-            i += 2
-        } else if (op == 4) {
-            if (!(dump || verbose)) {
-                printf "%.f\n", x
-            } else {
-                print_ops(px)
-                if (!dump) {
-                    x = x == "" ? 0 : x
-                    if (!output_str)
-                        output_str = x
-                    else
-                        output_str = output_str "," x
-                }
+                x = x == "" ? 0 : x
+                if (!output_str) output_str = x
+                else output_str = output_str "," x
             }
-            i += 2
-        } else if (op == 5) {
-            if (dump || verbose)
-                print_ops(px,py)
-            if (!dump)
-                i = x ? y : i + 3
-            else
-                i += 3
-        } else if (op == 6) {
-            if (dump || verbose)
-                print_ops(px,py)
-            if (!dump)
-                i = !x ? y : i + 3
-            else
-                i += 3
-        } else if (op == 7) {
-            if (dump || verbose)
-                print_ops(px,py,pz)
-            if (!dump) p[rz] = x < y
-            i += 4
-        } else if (op == 8) {
-            if (dump || verbose)
-                print_ops(px,py,pz)
-            if (!dump) p[rz] = x == y
-            i += 4
-        } else if (op == 9) {
-            rb += x
-            if (dump || verbose)
-                print_ops(px)
-            i += 2
-        } else if (op == 99) {
-            if (dump || verbose) {
+            else if (op == 5)  { print_ops(px,py);    }
+            else if (op == 6)  { print_ops(px,py);    }
+            else if (op == 7)  { print_ops(px,py,pz); }
+            else if (op == 8)  { print_ops(px,py,pz); }
+            else if (op == 9)  { print_ops(px);       }
+            else if (op == 99) {
                 print_ops()
                 if (output_str)
                     printf "\nAll output: %s\n", output_str
-            }
-            i++
-            if (verbose && !dump)
                 printf "Op count:   %d\n", opcount
-            if (!dump) exit 0
-        } else if (dump) {
-            i++
-            opcount--
+            }
         }
-        if (!dump)
-            i = i == "" ? 0 : i
+        if      (op == 1) { p[rz] = x + y;           i += 4 }
+        else if (op == 2) { p[rz] = x * y;           i += 4 }
+        else if (op == 3) { p[rx] = inpv[++k];       i += 2 }
+        else if (op == 4) { if(!v) printf "%.f\n",x; i += 2 }
+        else if (op == 5) { i = x ? y :              i +  3 }
+        else if (op == 6) { i = !x ? y :             i +  3 }
+        else if (op == 7) { p[rz] = x < y;           i += 4 }
+        else if (op == 8) { p[rz] = x == y;          i += 4 }
+        else if (op == 9) { rb += x;                 i += 2 }
+        i = i == "" ? 0 : i
+    }
+}
+
+function dump(intcode) {
+    init(intcode)
+    printf "\n%s (%d ints, %s) %s\n\n", FILENAME, l, format, mode
+    while (i < l) {
+        rop = op = p[i]
+        xm  = int(op/100)   % 10
+        ym  = int(op/1000)  % 10
+        zm  = int(op/10000) % 10
+        op %= 100
+        px  = xm == 1 ? p[i+1]                  \
+            : xm == 2 ? rel_str(p[i+1], rb_str) \
+            : "*" p[i+1]
+        py  = ym == 1 ? p[i+2]                  \
+            : ym == 2 ? rel_str(p[i+2], rb_str) \
+            : "*" p[i+2]
+        pz  = zm ? rel_str(p[i+3], rb_str)      \
+            : "*" p[i+3]
+        if      (op == 1)  { print_ops(px,py,pz); i += 4 }
+        else if (op == 2)  { print_ops(px,py,pz); i += 4 }
+        else if (op == 3)  { print_ops(px);       i += 2 }
+        else if (op == 4)  { print_ops(px);       i += 2 }
+        else if (op == 5)  { print_ops(px,py);    i += 3 }
+        else if (op == 6)  { print_ops(px,py);    i += 3 }
+        else if (op == 7)  { print_ops(px,py,pz); i += 4 }
+        else if (op == 8)  { print_ops(px,py,pz); i += 4 }
+        else if (op == 9)  { print_ops(px);       i += 2 }
+        else if (op == 99) { print_ops();         i++    }
+        else               {                      i++    }
     }
 }
