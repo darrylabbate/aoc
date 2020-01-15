@@ -36,7 +36,7 @@ opcode[$1] {
 
 function param(p) {
     gsub("[^[:digit:]-]+", "", p)
-    return p
+    return p == "" ? 0 : p
 }
 
 function full_op(op,c,b,a) {
