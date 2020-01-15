@@ -9,8 +9,7 @@ BEGIN {
     FS     = "[, ]*"
     d      = d ? d : 0
     v      = v ? v : 0
-    mode   = d ? "dump" : "interpret"
-    mode   = v ? mode " (VERBOSE)" : mode
+    mode   = d ? "DUMP" : "INTERPRET"
     rb_str = "rb"
     inp    = inp ? inp : 0
     split(inp, inpv)
@@ -46,7 +45,7 @@ function full_op(op,c,b,a) {
     if (a != "") a = (a ~ /rb/) ? 2 : (a !~ /^\*/)
     if (c) op = c 0 op
     if (b) op = c ? b op : b 0 0 op
-    if (a) op = b ? a op : c ? a op : a 0 op
+    if (a) op = c ? b ? a op : a 0 op : b ? a op : a 0 0 0 op
     return op
 }
 
@@ -83,12 +82,12 @@ function init(intcode) {
     l_digits = length(l)
     rb = 0
     i  = 0
+    if (v)
+        printf "\n%s (%d ints, %s) %s\n\n", FILENAME, l, format, mode
 }
 
 function interpret(intcode) {
     init(intcode)
-    if (v)
-        printf "\n%s (%d ints, %s) %s\n\n", FILENAME, l, format, mode
     while (op < 99) {
         opcount++
         rop = op = p[i]
@@ -135,9 +134,9 @@ function interpret(intcode) {
         else if (op == 2) { p[rz] = x * y;           i += 4 }
         else if (op == 3) { p[rx] = inpv[++k];       i += 2 }
         else if (op == 4) { if(!v) printf "%.f\n",x; i += 2 }
-        else if (op == 5) { i = x ? y :              i +  3 }
+        else if (op == 5) { i =  x ? y :             i +  3 }
         else if (op == 6) { i = !x ? y :             i +  3 }
-        else if (op == 7) { p[rz] = x < y;           i += 4 }
+        else if (op == 7) { p[rz] = x <  y;          i += 4 }
         else if (op == 8) { p[rz] = x == y;          i += 4 }
         else if (op == 9) { rb += x;                 i += 2 }
         i = i == "" ? 0 : i
@@ -146,7 +145,6 @@ function interpret(intcode) {
 
 function dump(intcode) {
     init(intcode)
-    printf "\n%s (%d ints, %s) %s\n\n", FILENAME, l, format, mode
     while (i < l) {
         rop = op = p[i]
         xm  = int(op/100)   % 10
