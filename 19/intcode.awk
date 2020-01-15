@@ -116,7 +116,8 @@ function print_ops(p1,p2,p3,    p_str) {
     if (p1 != "") printf "\t%s", p1
     if (p2 != "") printf ", %s", p2
     if (p3 != "") printf ", %s", p3
-    printf "\033[0m\n"
+    if (op == h || rop == h) printf "\033[0m"
+    printf "\n"
 }
 
 function print_nop(p1) {
