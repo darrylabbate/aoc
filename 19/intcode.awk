@@ -9,8 +9,9 @@ BEGIN {
     FS      = "[, ]*"
     dump    = d ? d : 0
     verbose = v ? v : 0
-    mode    = dump ? "DUMP" : "VERBOSE"
-    os_str  = "OFFSET"
+    mode    = dump ? "DUMP" : ""
+    mode    = verbose ? mode " VERBOSE" : mode
+    rb_str  = "rb"
     inp     = inp ? inp : 0
     v       = 1
     split(inp, inpv)
@@ -41,9 +42,9 @@ function param(p) {
 
 function full_op(op,c,b,a) {
     if (c == "") return op
-    else   c = (c ~ /OFF/) ? 2 : (c !~ /^\*/)
-    if (b != "") b = (b ~ /OFF/) ? 2 : (b !~ /^\*/)
-    if (a != "") a = (a ~ /OFF/) ? 2 : (a !~ /^\*/)
+    else   c = (c ~ /rb/) ? 2 : (c !~ /^\*/)
+    if (b != "") b = (b ~ /rb/) ? 2 : (b !~ /^\*/)
+    if (a != "") a = (a ~ /rb/) ? 2 : (a !~ /^\*/)
 
     if (c) op = c 0 op
     if (b) op = c ? b op : b 0 0 op
@@ -55,12 +56,14 @@ function full_op(op,c,b,a) {
 END { interpret(prog) }
 
 function print_ops(p1,p2,p3,    p_str) {
-    printf "%*d:  ", l_digits, i
-    printf "%5d ", rop
-    if (p1 != "") p_str = p[i+1]
-    if (p2 != "") p_str = p_str " " p[i+2]
-    if (p3 != "") p_str = p_str " " p[i+3]
-    printf "%-16s ", p_str
+    if (verbose) {
+        printf "%*d:  ", l_digits, i
+        printf "%5d ", rop
+        if (p1 != "") p_str = p[i+1]
+        if (p2 != "") p_str = p_str " " p[i+2]
+        if (p3 != "") p_str = p_str " " p[i+3]
+        printf "%-8s\t", p_str
+    }
     printf "%-6s", opname[op]
     if (p1 != "") printf "%s", p1
     if (p2 != "") printf ", %s", p2
@@ -68,9 +71,9 @@ function print_ops(p1,p2,p3,    p_str) {
     printf "\n"
 }
 
-function rel_str(p,os) {
-    os_op = p >= 0 ? "+" : ""
-    return "*(" os os_op p ")"
+function rel_str(p,rb) {
+    rb_op = p >= 0 ? "+" : ""
+    return p == 0 ? "*" rb : "*(" rb rb_op p ")"
 }
 
 function interpret(intcode) {
@@ -78,7 +81,7 @@ function interpret(intcode) {
     for (j = 0; j < l; j++)
         p[j] = t[j+1]
     l_digits = length(l)
-    os = 0
+    rb = 0
     i  = 0
     if (dump || verbose)
         printf "\n%s (%d ints, %s) %s\n\n", FILENAME, l, format, mode
@@ -89,28 +92,28 @@ function interpret(intcode) {
         ym  = int(op/1000)  % 10
         zm  = int(op/10000) % 10
         op %= 100
-        x   = xm == 1 ? p[i+1] : xm == 2 ? p[p[i+1]+os] : p[p[i+1]]
-        y   = ym == 1 ? p[i+2] : ym == 2 ? p[p[i+2]+os] : p[p[i+2]]
-        rx  = xm ? p[i+1]+os : p[i+1]
-        rz  = zm ? p[i+3]+os : p[i+3]
+        x   = xm == 1 ? p[i+1] : xm == 2 ? p[p[i+1]+rb] : p[p[i+1]]
+        y   = ym == 1 ? p[i+2] : ym == 2 ? p[p[i+2]+rb] : p[p[i+2]]
+        rx  = xm ? p[i+1]+rb : p[i+1]
+        rz  = zm ? p[i+3]+rb : p[i+3]
         p[rz] = p[rz] == "" ? 0 : p[rz]
         if (verbose) {
             px  = xm == 1 ? x                         \
-                : xm == 2 ? rel_str(p[i+1],os) "->" x \
+                : xm == 2 ? rel_str(p[i+1],rb) "->" x \
                 : "*" p[i+1] "->" x
             py  = ym == 1 ? y                         \
-                : ym == 2 ? rel_str(p[i+2],os) "->" y \
+                : ym == 2 ? rel_str(p[i+2],rb) "->" y \
                 : "*" p[i+2] "->" y
-            pz  = zm ? rel_str(p[i+3],os) "->" p[rz]  \
+            pz  = zm ? rel_str(p[i+3],rb) "->" p[rz]  \
                 : "*" p[i+3] "->" p[rz]
         } else if (dump) {
             px  = xm == 1 ? x                       \
-                : xm == 2 ? rel_str(p[i+1], os_str) \
+                : xm == 2 ? rel_str(p[i+1], rb_str) \
                 : "*" p[i+1]
             py  = ym == 1 ? y                       \
-                : ym == 2 ? rel_str(p[i+2], os_str) \
+                : ym == 2 ? rel_str(p[i+2], rb_str) \
                 : "*" p[i+2]
-            pz  = zm ? rel_str(p[i+3], os_str)      \
+            pz  = zm ? rel_str(p[i+3], rb_str)      \
                 : "*" p[i+3]
         }
         if (op == 1) {
@@ -169,7 +172,7 @@ function interpret(intcode) {
             if (!dump) p[rz] = x == y
             i += 4
         } else if (op == 9) {
-            os += x
+            rb += x
             if (dump || verbose)
                 print_ops(px)
             i += 2
@@ -180,7 +183,7 @@ function interpret(intcode) {
                     printf "\nAll output: %s\n", output_str
             }
             i++
-            if (verbose)
+            if (verbose && !dump)
                 printf "Op count:   %d\n", opcount
             if (!dump) exit 0
         } else if (dump) {
