@@ -24,7 +24,7 @@ function input() {
     if (inpv[++inpc] != "")
         p[rx] = inpv[inpc]
     else
-        error(3, "Control flow reached input instruction with empty input vector")
+        error(3, "Control reached input instruction with empty input vector")
     ip += 2
 }
 
@@ -100,11 +100,12 @@ function full_op(op,c,b,a) {
 }
 
 END {
-    if (d) dump(prog)
-    else   interpret(prog)
+    init(prog)
+    if (d) dump(0, l)
+    else   interpret()
 }
 
-function print_ops(p1,p2,p3,    p_str) {
+function print_ops(ip,rop,op,p1,p2,p3,    p_str) {
     if (v) {
         if (op == h || rop == h) printf "\033[1;32m"
         printf "%*d:  ", l_digits, ip
@@ -135,10 +136,10 @@ function rel_str(p,rb) {
     return p == 0 ? "*" rb : "*(" rb rb_op p ")"
 }
 
-function init(intcode) {
-    l = split(intcode,t)
+function init(prog) {
+    l = split(prog,ref)
     for (j = 0; j < l; j++)
-        p[j] = t[j+1]
+        p[j] = ref[j+1]
     l_digits = length(l)
     rb = 0
     ip = 0
@@ -147,8 +148,7 @@ function init(intcode) {
     before()
 }
 
-function interpret(intcode) {
-    init(intcode)
+function interpret() {
     while (op < 99) {
         icount++
         rop = op = p[ip]
@@ -162,36 +162,32 @@ function interpret(intcode) {
         rz  = zm ? p[ip+3]+rb : p[ip+3]
         p[rz] = p[rz] == "" ? 0 : p[rz]
         if (v) {
-            px  = xm == 1 ? x                         \
+            px  = xm == 1 ? x                          \
                 : xm == 2 ? rel_str(p[ip+1],rb) "->" x \
                 : "*" p[ip+1] "->" x
-            py  = ym == 1 ? y                         \
+            py  = ym == 1 ? y                          \
                 : ym == 2 ? rel_str(p[ip+2],rb) "->" y \
                 : "*" p[ip+2] "->" y
             pz  = zm ? rel_str(p[ip+3],rb) "->" p[rz]  \
                 : "*" p[ip+3] "->" p[rz]
-            if      (op == 1)  { print_ops(px,py,pz); }
-            else if (op == 2)  { print_ops(px,py,pz); }
-            else if (op == 3)  { print_ops(px);       }
+            if      (op == 1)  { print_ops(ip,rop,op,px,py,pz) }
+            else if (op == 2)  { print_ops(ip,rop,op,px,py,pz) }
+            else if (op == 3)  { print_ops(ip,rop,op,px)       }
             else if (op == 4)  {
-                print_ops(px)
+                print_ops(ip,rop,op,px)
                 x = x == "" ? 0 : x
                 outv[++outc] = x
             }
-            else if (op == 5)  { print_ops(px,py);    }
-            else if (op == 6)  { print_ops(px,py);    }
-            else if (op == 7)  { print_ops(px,py,pz); }
-            else if (op == 8)  { print_ops(px,py,pz); }
-            else if (op == 9)  { print_ops(px);       }
+            else if (op == 5)  { print_ops(ip,rop,op,px,py)    }
+            else if (op == 6)  { print_ops(ip,rop,op,px,py)    }
+            else if (op == 7)  { print_ops(ip,rop,op,px,py,pz) }
+            else if (op == 8)  { print_ops(ip,rop,op,px,py,pz) }
+            else if (op == 9)  { print_ops(ip,rop,op,px)       }
             else if (op == 99) {
-                print_ops()
+                print_ops(ip,rop,op)
                 printf "\nHalted successfully\n"
                 printf "Instruction count: %d\n", icount
-                if (outv[1] != "") {
-                    printf "\n--- BEGIN OUTPUT ---\n"
-                    flush_output()
-                    printf "\n--- END OUTPUT ---\n"
-                }
+                if (outv[1] != "") flush_output()
             }
         }
         if      (op == 1) { p[rz] = x + y;  ip += 4 }
@@ -207,53 +203,51 @@ function interpret(intcode) {
     }
 }
 
-function dump(intcode) {
-    init(intcode)
-    while (ip < l) {
-        rop = op = p[ip]
+function dump(dp, steps,    dc) {
+    if (!steps) steps = l
+    while (dc++ < steps && dp < l) {
+        rop = op = p[dp]
         xm  = int(op/100)   % 10
         ym  = int(op/1000)  % 10
         zm  = int(op/10000) % 10
         op %= 100
-        px  = xm == 1 ? p[ip+1]                  \
-            : xm == 2 ? rel_str(p[ip+1], rb_str) \
-            : "*" p[ip+1]
-        py  = ym == 1 ? p[ip+2]                  \
-            : ym == 2 ? rel_str(p[ip+2], rb_str) \
-            : "*" p[ip+2]
-        pz  = zm ? rel_str(p[ip+3], rb_str)      \
-            : "*" p[ip+3]
-        if      (op == 1)  { print_ops(px,py,pz); ip += 4 }
-        else if (op == 2)  { print_ops(px,py,pz); ip += 4 }
-        else if (op == 3)  { print_ops(px);       ip += 2 }
-        else if (op == 4)  { print_ops(px);       ip += 2 }
-        else if (op == 5)  { print_ops(px,py);    ip += 3 }
-        else if (op == 6)  { print_ops(px,py);    ip += 3 }
-        else if (op == 7)  { print_ops(px,py,pz); ip += 4 }
-        else if (op == 8)  { print_ops(px,py,pz); ip += 4 }
-        else if (op == 9)  { print_ops(px);       ip += 2 }
-        else if (op == 99) { print_ops();         ip++    }
-        else               { print_nop(rop);      ip++    }
+        px  = xm == 1 ? p[dp+1]                  \
+            : xm == 2 ? rel_str(p[dp+1], rb_str) \
+            : "*" p[dp+1]
+        py  = ym == 1 ? p[dp+2]                  \
+            : ym == 2 ? rel_str(p[dp+2], rb_str) \
+            : "*" p[dp+2]
+        pz  = zm ? rel_str(p[dp+3], rb_str)      \
+            : "*" p[dp+3]
+        if      (op == 1)  { print_ops(dp,rop,op,px,py,pz); dp += 4 }
+        else if (op == 2)  { print_ops(dp,rop,op,px,py,pz); dp += 4 }
+        else if (op == 3)  { print_ops(dp,rop,op,px);       dp += 2 }
+        else if (op == 4)  { print_ops(dp,rop,op,px);       dp += 2 }
+        else if (op == 5)  { print_ops(dp,rop,op,px,py);    dp += 3 }
+        else if (op == 6)  { print_ops(dp,rop,op,px,py);    dp += 3 }
+        else if (op == 7)  { print_ops(dp,rop,op,px,py,pz); dp += 4 }
+        else if (op == 8)  { print_ops(dp,rop,op,px,py,pz); dp += 4 }
+        else if (op == 9)  { print_ops(dp,rop,op,px);       dp += 2 }
+        else if (op == 99) { print_ops(dp,rop,op);          dp ++   }
+        else               { print_nop(rop);                dp ++   }
     }
 }
 
 function error(code, msg) {
-    printf "\n\033[31merror:\033[0m %s\n" \
-                     "  at memory location %.f (Opcode %.f)\n" \
-                     "  instruction #%d\n", msg, ip, p[ip], icount
-    if (v) {
-        printf "\n--- BEGIN FLUSHED OUTPUT VECTOR ---\n"
-        flush_output()
-        printf "\n--- END OUTPUT ---\n"
-    }
+    printf "\n\033[31merror:\033[0m %s\n"            \
+           "  at memory location %.f (Opcode %.f)\n" \
+           "  instruction #%d\n", msg, ip, p[ip], icount
+    if (v) flush_output()
     exit code
 }
 
 function flush_output() {
+    printf "\n--- BEGIN OUTPUT ---\n"
     for (j = 1; j <= length(outv); j++) {
         if (a && outv[j] >= 0 && outv[j] <= 127)
             printf "%c", outv[j]
         else
             printf "%.f ", outv[j]
     }
+    printf "\n--- END OUTPUT ---\n"
 }
