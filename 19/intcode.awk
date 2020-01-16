@@ -30,8 +30,10 @@ function input() {
 
 function output() {
     if (!v) {
-        if (a) printf "%c",    x
-        else   printf "%.f\n", x
+        if (a && x >= 0 && x <= 127)
+            printf "%c", x
+        else 
+            printf "%.f\n", x
     }
     ip += 2
 }
@@ -184,12 +186,12 @@ function interpret(intcode) {
             else if (op == 99) {
                 print_ops()
                 printf "\nHalted successfully\n"
+                printf "Instruction count: %d\n", icount
                 if (outv[1] != "") {
                     printf "\n--- BEGIN OUTPUT ---\n"
                     flush_output()
-                    printf "\n--- END OUTPUT ---\n\n"
+                    printf "\n--- END OUTPUT ---\n"
                 }
-                printf "Instruction count: %d\n", icount
             }
         }
         if      (op == 1) { p[rz] = x + y;  ip += 4 }
