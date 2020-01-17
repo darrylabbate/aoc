@@ -84,6 +84,7 @@ BEGIN {
 }
 
 opcode[$1] {
+    asm_lns++
     format     = "asm"
     db_asm_sep = _db_build_sep(sprintf("source:%s", FILENAME))
     if (!prog) prog =          full_op(opcode[$1],$2,$3,$4)
@@ -123,6 +124,8 @@ END {
 }
 
 function _db_init() {
+    if (asm_lns <= (height - 7))
+        full_disas = 1
     printf "\033[2J\033[1;1H"
     _db_parse_inp()
 }
@@ -186,12 +189,7 @@ function _db_print_mem(    memstr) {
     printf "%s ...\n", memstr
 }
 
-function _db_output(    offset,cur) {
-    printf "\033[2J\033[1;1H\033[0m"
-    printf "RB => %d\n", rb
-    printf "%s\n", db_mem_sep
-    _db_print_mem()
-    printf "%s\n", db_asm_sep
+function _db_print_disas(   offset,cur) {
     for (j = hsize; j > 0; j--) {
         if (hist[j]) printf "\033[90m   %s\n", hist[j]
         else offset++
@@ -201,7 +199,16 @@ function _db_output(    offset,cur) {
         hist[j] = hist[j-1]
     split(disas(ip,rb,1),cur,SUBSEP)
     hist[1] = cur[2]
-    disas(cur[1], rb, hsize + offset)
+    disas(cur[1], rb, hsize + offset + 1)
+}
+
+function _db_output() {
+    printf "\033[2J\033[1;1H\033[0m"
+    printf "RB => %d\n", rb
+    printf "%s\n", db_mem_sep
+    _db_print_mem()
+    printf "%s\n", db_asm_sep
+    _db_print_disas()
     printf "%s\n", db_sep
 }
 
