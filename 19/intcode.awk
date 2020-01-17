@@ -6,11 +6,12 @@
 #   awk -v i=1,2,3 -f intcode.awk file  | Pass a series of inputs
 #
 # AVAILABLE SWITCHES:
-#   a | [1] ASCII mode (converts input vector and outputs to ASCII)
-#   d | [1] Dump disassembly
-#   i | [n,m,...] The input vector the program reads from
-#   h | [n] Highlight lines where opcode == n (parameterized or not)
-#   v | [1] Print disassembly verbosely
+#   a  | [1] ASCII mode (converts input vector and outputs to ASCII)
+#   db | [1] Invoke interactive debugging session
+#   d  | [1] Dump disassembly
+#   i  | [n,m,...] The input vector the program reads from
+#   h  | [n] Highlight lines where opcode == n (parameterized or not)
+#   v  | [1] Print disassembly verbosely
 
 # input() and output() are provided here to be modified as necessary
 # for a given puzzle
@@ -66,22 +67,25 @@ BEGIN {
         brk = "─"
         "tput lines" | getline height
         close("tput lines")
-        hsize = height - 7
+        hsize = int(height/2) - 4
         "tput cols" | getline width
         close("tput cols")
         lfile = length(ARGV[1])
-        print lfile
         delete bp
+        db_sep     = _db_build_sep()
+        db_mem_sep = _db_build_sep("memory")
     }
 }
 
 /^[0-9]/ {
-    format = "Intcode"
-    prog   = $0
+    format     = "Intcode"
+    db_asm_sep = _db_build_sep("disassembly")
+    prog       = $0
 }
 
 opcode[$1] {
-    format = "asm"
+    format     = "asm"
+    db_asm_sep = _db_build_sep(sprintf("source:%s", FILENAME))
     if (!prog) prog =          full_op(opcode[$1],$2,$3,$4)
     else       prog = prog "," full_op(opcode[$1],$2,$3,$4)
     if ($2 != "") prog = prog "," param($2)
@@ -112,49 +116,49 @@ function full_op(op,c,b,a) {
 
 END {
     init(prog)
-    if (db) {
-        printf "\033[2J\033[1;1H"
-        parse_db_inp()
-    } 
-    
-    if (d) {
-        disas(0, 0, l)
-    } else {
-        interpret()
-    }
+    if (db) _db_init()
+
+    if (d)  disas(0, 0, l)
+    else    interpret()
 }
 
-function print_ops(pp,rop,op,p1,p2,p3,    p_str) {
+function _db_init() {
+    printf "\033[2J\033[1;1H"
+    _db_parse_inp()
+}
+
+function print_ops(pp,rop,op,p1,p2,p3,    ln) {
     if (db) {
         if (pp == ip)
-            printf "\033[32m-> %*d:  ", l_digits, pp
-        else if (pp < ip)
-            printf "\033[90m   %*d:  ", l_digits, pp
+            printf "\033[32m-> "
         else
-            printf "   %*d:  ", l_digits, pp
-    } else if (v) {
-        printf "%*d:  ", l_digits, pp
-    }
+            printf "   "
+    } 
+    ln = build_ins_ln(pp,rop,op,p1,p2,p3)
+    printf "%s\n", ln
+    if (db && pp == ip)
+        printf "\033[0m"
+    return ln
+}
 
-    if (v) {
-        printf "%5d ", rop
+function build_ins_ln(pp,rop,op,p1,p2,p3,    ln,p_str) {
+    ln = sprintf("%*d:  ", ldigits, pp)
+    if (v || (db && width > 70)) {
         if (p1 != "") p_str = p[pp+1]
         if (p2 != "") p_str = p_str " " p[pp+2]
         if (p3 != "") p_str = p_str " " p[pp+3]
-        printf "%-12s\t", p_str
+        p_str = sprintf("%5d %-10s\t", rop, p_str)
+        ln = ln p_str
     }
-
-    printf "%s", opname[op] ? opname[op] : "nop"
-
+    ln = ln sprintf("%s", opname[op] ? opname[op] : "nop")
     if (!opname[op]) {
-        printf "\t%s\n", rop
-        return
+        ln = ln sprintf("\t%s\n", rop)
+    } else {
+        if (p1 != "") ln = ln sprintf("\t%s", p1)
+        if (p2 != "") ln = ln sprintf(", %s", p2)
+        if (p3 != "") ln = ln sprintf(", %s", p3)
     }
-    if (p1 != "") printf "\t%s", p1
-    if (p2 != "") printf ", %s", p2
-    if (p3 != "") printf ", %s", p3
-    if (db) printf "\033[0m"
-    printf "\n"
+    return ln
 }
 
 function rel_str(p,rb) {
@@ -166,7 +170,7 @@ function init(prog) {
     l = split(prog,ref)
     for (j = 0; j < l; j++)
         p[j] = ref[j+1]
-    l_digits = length(l)
+    ldigits = length(l)
     rb = 0
     ip = 0
     if (v)
@@ -174,22 +178,7 @@ function init(prog) {
     before()
 }
 
-function print_sep(txt) {
-    if (!txt) {
-        printf "\033[90m"
-        for (j = 0; j < width; j++) printf "%s", brk
-        printf "\033[0m\n"
-    } else {
-        printf "\033[90m"
-        for (j = 0; j < width - 5 - length(txt); j++)
-            printf "%s", brk
-        printf "\033[1;34m %s \033[90m", txt
-        for (j = 0; j < 3; j++) printf "%s", brk
-        printf "\033[0m\n"
-    }
-}
-
-function memdump(    memstr) {
+function _db_print_mem(    memstr) {
     memstr = "[" p[ip] "]"
     for (j = ip+1; length(memstr) < width - 10; j++) {
         memstr = memstr " " p[j]
@@ -197,30 +186,41 @@ function memdump(    memstr) {
     printf "%s ...\n", memstr
 }
 
-function db_output() {
+function _db_output(    offset,cur) {
     printf "\033[2J\033[1;1H\033[0m"
     printf "RB => %d\n", rb
-    print_sep("memory")
-    memdump()
-    print_sep(sprintf("source:%s", FILENAME))
-    disas(ip, rb, hsize)
-    print_sep()
+    printf "%s\n", db_mem_sep
+    _db_print_mem()
+    printf "%s\n", db_asm_sep
+    for (j = hsize; j > 0; j--) {
+        if (hist[j]) printf "\033[90m   %s\n", hist[j]
+        else offset++
+    }
+    printf "\033[0m"
+    for (j = hsize; j > 0; j--)
+        hist[j] = hist[j-1]
+    split(disas(ip,rb,1),cur,SUBSEP)
+    hist[1] = cur[2]
+    disas(cur[1], rb, hsize + offset)
+    printf "%s\n", db_sep
 }
 
-
-function eval_db() {
+function _db_eval() {
     if (ip in bp) {
-        db_output()
+        _db_output()
         printf "\033[1;31mstopped\033[0m, reason: \033[1;33mBREAKPOINT\033[0m\n"
-        parse_db_inp()
+        _db_parse_inp()
     } else if (!--stepc) {
-        db_output()
+        _db_output()
         printf "\033[1;31mstopped\033[0m, reason: \033[1;33mSINGLE STEP\033[0m\n"
-        parse_db_inp()
+        _db_parse_inp()
     }
 }
 
-function parse_db_inp(str) {
+function _db_eval_jmp() {
+}
+
+function _db_parse_inp(str) {
     printf "idb> "
     getline str < "-"
     if (str == "q") {
@@ -230,7 +230,7 @@ function parse_db_inp(str) {
         v = 1
         disas(0, l)
         v = 0
-        parse_db_inp()
+        _db_parse_inp()
     } else if (str == "r" && !ip) {
         printf "Starting program:\n"
         interpret()
@@ -242,14 +242,14 @@ function parse_db_inp(str) {
         } else {
             printf "Breakpoint already set at memory location %d\n", str
         }
-        parse_db_inp()
+        _db_parse_inp()
     } else if (str ~ /^[0-9]/) {
         stepc = str
     } else if (str == "s") {
         stepc = 1
     } else {
         printf "Unknown command: %s\n", str
-        parse_db_inp()
+        _db_parse_inp()
     }
     return
 }
@@ -268,10 +268,7 @@ function interpret() {
         rz  = zm ? p[ip+3]+rb : p[ip+3]
         p[rz] = p[rz] == "" ? 0 : p[rz]
         if (db) {
-            eval_db()
-            for (i = hsize; i > 0; i--)
-                hist[i] = hist[i-1]
-            hist[1] = ip
+            _db_eval()
         } else if (v) {
             px  = xm == 1 ? x                          \
                 : xm == 2 ? rel_str(p[ip+1],rb) "->" x \
@@ -314,7 +311,7 @@ function interpret() {
     }
 }
 
-function disas(dp, rb, steps,    dc,rop,op,xm,ym,zm,x,y,rz,px,py,pz) {
+function disas(dp, rb, steps,    dc,rop,op,xm,ym,zm,x,y,rz) {
     dp = (dp == "" || dp < 0) ? 0 : dp
     if (!steps) steps = l
     while (dc++ < steps && dp < l) {
@@ -328,36 +325,37 @@ function disas(dp, rb, steps,    dc,rop,op,xm,ym,zm,x,y,rz,px,py,pz) {
         rz  = zm ? p[ip+3]+rb : p[ip+3]
         p[rz] = p[rz] == "" ? 0 : p[rz]
         if (db) {
-            px  = xm == 1 ? x                          \
-                : xm == 2 ? rel_str(p[dp+1],rb) "->" x \
-                : "*" p[dp+1] "->" x
-            py  = ym == 1 ? y                          \
-                : ym == 2 ? rel_str(p[dp+2],rb) "->" y \
-                : "*" p[ip+2] "->" y
-            pz  = zm ? rel_str(p[dp+3],rb) "->" p[rz]  \
-                : "*" p[ip+3] "->" p[rz]
+            x  = xm == 1 ? x                          \
+               : xm == 2 ? rel_str(p[dp+1],rb) "->" x \
+               : "*" p[dp+1] "->" x
+            y  = ym == 1 ? y                          \
+               : ym == 2 ? rel_str(p[dp+2],rb) "->" y \
+               : "*" p[ip+2] "->" y
+            z  = zm ? rel_str(p[dp+3],rb) "->" p[rz]  \
+               : "*" p[ip+3] "->" p[rz]
         } else {
-            px  = xm == 1 ? p[dp+1]                  \
-                : xm == 2 ? rel_str(p[dp+1], rb_str) \
-                : "*" p[dp+1]
-            py  = ym == 1 ? p[dp+2]                  \
-                : ym == 2 ? rel_str(p[dp+2], rb_str) \
-                : "*" p[dp+2]
-            pz  = zm ? rel_str(p[dp+3], rb_str)      \
-                : "*" p[dp+3]
+            x  = xm == 1 ? p[dp+1]                  \
+               : xm == 2 ? rel_str(p[dp+1], rb_str) \
+               : "*" p[dp+1]
+            y  = ym == 1 ? p[dp+2]                  \
+               : ym == 2 ? rel_str(p[dp+2], rb_str) \
+               : "*" p[dp+2]
+            z  = zm ? rel_str(p[dp+3], rb_str)      \
+               : "*" p[dp+3]
         }
-        if      (op == 1)  { print_ops(dp,rop,op,px,py,pz); dp += 4 }
-        else if (op == 2)  { print_ops(dp,rop,op,px,py,pz); dp += 4 }
-        else if (op == 3)  { print_ops(dp,rop,op,px);       dp += 2 }
-        else if (op == 4)  { print_ops(dp,rop,op,px);       dp += 2 }
-        else if (op == 5)  { print_ops(dp,rop,op,px,py);    dp += 3 }
-        else if (op == 6)  { print_ops(dp,rop,op,px,py);    dp += 3 }
-        else if (op == 7)  { print_ops(dp,rop,op,px,py,pz); dp += 4 }
-        else if (op == 8)  { print_ops(dp,rop,op,px,py,pz); dp += 4 }
-        else if (op == 9)  { print_ops(dp,rop,op,px);       dp += 2 }
-        else if (op == 99) { print_ops(dp,rop,op);          dp ++   }
-        else               { print_ops(dp,rop);             dp ++   }
+        if      (op == 1)  { ln = print_ops(dp,rop,op,x,y,z); dp += 4 }
+        else if (op == 2)  { ln = print_ops(dp,rop,op,x,y,z); dp += 4 }
+        else if (op == 3)  { ln = print_ops(dp,rop,op,x);     dp += 2 }
+        else if (op == 4)  { ln = print_ops(dp,rop,op,x);     dp += 2 }
+        else if (op == 5)  { ln = print_ops(dp,rop,op,x,y);   dp += 3 }
+        else if (op == 6)  { ln = print_ops(dp,rop,op,x,y);   dp += 3 }
+        else if (op == 7)  { ln = print_ops(dp,rop,op,x,y,z); dp += 4 }
+        else if (op == 8)  { ln = print_ops(dp,rop,op,x,y,z); dp += 4 }
+        else if (op == 9)  { ln = print_ops(dp,rop,op,x);     dp += 2 }
+        else if (op == 99) { ln = print_ops(dp,rop,op);       dp ++   }
+        else               { ln = print_ops(dp,rop);          dp ++   }
     }
+    return dp SUBSEP ln
 }
 
 function error(code, msg) {
@@ -377,4 +375,22 @@ function flush_output() {
             printf "%.f ", outv[j]
     }
     printf "\n--- END OUTPUT ---\n"
+}
+
+function _db_build_sep(txt,    sep) {
+    if (!txt) {
+        sep = sprintf("\033[90m")
+        for (j = 0; j < width; j++)
+            sep = sep sprintf("%s", brk)
+        sep = sep sprintf("\033[0m")
+    } else {
+        sep = sprintf("\033[90m")
+        for (j = 0; j < width - 5 - length(txt); j++)
+            sep = sep sprintf("%s", brk)
+        sep = sep sprintf("\033[1;34m %s \033[90m", txt)
+        for (j = 0; j < 3; j++)
+            sep = sep sprintf("%s", brk)
+        sep = sep sprintf("\033[0m")
+    }
+    return sep
 }
