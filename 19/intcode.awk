@@ -63,7 +63,7 @@ BEGIN {
         split(i, inpv)
     }
     if (db) {
-        brk = "━"
+        brk = "─"
         "tput lines" | getline height
         close("tput lines")
         hsize = height - 7
