@@ -10,7 +10,6 @@
 #   db | [1] Invoke interactive debugging session
 #   d  | [1] Dump disassembly
 #   i  | [n,m,...] The input vector the program reads from
-#   h  | [n] Highlight lines where opcode == n (parameterized or not)
 #   v  | [1] Print disassembly verbosely
 
 # input() and output() are provided here to be modified as necessary
@@ -84,7 +83,7 @@ BEGIN {
 }
 
 opcode[$1] {
-    asm_lns++
+    asm_ln_count++
     format     = "asm"
     db_asm_sep = _db_build_sep(sprintf("source:%s", FILENAME))
     if (!prog) prog =          full_op(opcode[$1],$2,$3,$4)
@@ -124,9 +123,12 @@ END {
 }
 
 function _db_init() {
-    if (asm_lns <= (height - 7))
+    if (asm_ln_count <= (height - 7))
         full_disas = 1
-    printf "\033[2J\033[1;1H"
+    for (j in p)
+        mdigits += length(p[j]) + 1
+    if (mdigits <= width)
+        full_mem = 1
     _db_parse_inp()
 }
 
@@ -138,7 +140,7 @@ function print_ops(pp,rop,op,p1,p2,p3,    ln) {
             printf "   "
     } 
     ln = build_ins_ln(pp,rop,op,p1,p2,p3)
-    printf "%s\n", ln
+    printf "%.*s\n", width - 3, ln
     if (db && pp == ip)
         printf "\033[0m"
     return ln
@@ -150,14 +152,17 @@ function build_ins_ln(pp,rop,op,p1,p2,p3,    ln,p_str) {
         if (p1 != "") p_str = p[pp+1]
         if (p2 != "") p_str = p_str " " p[pp+2]
         if (p3 != "") p_str = p_str " " p[pp+3]
-        p_str = sprintf("%5d %-10s\t", rop, p_str)
+        if (!opname[op])
+            p_str = sprintf("      %-16s", rop)
+        else
+            p_str = sprintf("%5d %-16s", rop, p_str)
         ln = ln p_str
     }
-    ln = ln sprintf("%s", opname[op] ? opname[op] : "nop")
+    ln = ln sprintf("%-6s", opname[op] ? opname[op] : "nop")
     if (!opname[op]) {
-        ln = ln sprintf("\t%s\n", rop)
+        ln = ln sprintf("%s", rop)
     } else {
-        if (p1 != "") ln = ln sprintf("\t%s", p1)
+        if (p1 != "") ln = ln sprintf("%s", p1)
         if (p2 != "") ln = ln sprintf(", %s", p2)
         if (p3 != "") ln = ln sprintf(", %s", p3)
     }
@@ -170,36 +175,56 @@ function rel_str(p,rb) {
 }
 
 function init(prog) {
-    l = split(prog,ref)
-    for (j = 0; j < l; j++)
+    init_mem_len = split(prog,ref)
+    for (j = 0; j < init_mem_len; j++)
         p[j] = ref[j+1]
-    ldigits = length(l)
+    ldigits = length(init_mem_len)
     rb = 0
     ip = 0
     if (v)
-        printf "\n%s (%d ints, %s) %s\n\n", FILENAME, l, format, mode
+        printf "\n%s (%d ints, %s) %s\n\n", FILENAME, init_mem_len, format, mode
     before()
 }
 
 function _db_print_mem(    memstr) {
-    memstr = "[" p[ip] "]"
-    for (j = ip+1; length(memstr) < width - 10; j++) {
-        memstr = memstr " " p[j]
+    if (full_mem) {
+        for (j = 0; j < ip; j++)
+            memstr = memstr sprintf("\033[90m%s ", p[j])
+        memstr = memstr sprintf("\033[32m%s\033[0m", p[ip])
+        for (j = ip+1; j < init_mem_len; j++)
+            memstr = memstr " " p[j]
+    } else {
+        memstr = "[" p[ip] "]"
+        for (j = ip+1; length(memstr) < width; j++) {
+            memstr = memstr " " p[j]
+        }
     }
-    printf "%s ...\n", memstr
+    printf "%.*s\n", width, memstr
 }
 
 function _db_print_disas(   offset,cur) {
-    for (j = hsize; j > 0; j--) {
-        if (hist[j]) printf "\033[90m   %s\n", hist[j]
-        else offset++
+    if (full_disas) {
+        for (j = 0; j < ip; j++) {
+            if (hist[j]) {
+                printf "\033[90m   %s\n", hist[j]
+                offset++
+            }
+        }
+        split(disas(ip,rb,1),cur,SUBSEP)
+        hist[ip] = cur[2]
+        disas(cur[1], rb, asm_ln_count - offset)
+    } else {
+        for (j = hsize; j > 0; j--) {
+            if (hist[j]) printf "\033[90m   %s\n", hist[j]
+            else offset++
+        }
+        printf "\033[0m"
+        for (j = hsize; j > 0; j--)
+            hist[j] = hist[j-1]
+        split(disas(ip,rb,1),cur,SUBSEP)
+        hist[1] = cur[2]
+        disas(cur[1], rb, hsize + offset + 1)
     }
-    printf "\033[0m"
-    for (j = hsize; j > 0; j--)
-        hist[j] = hist[j-1]
-    split(disas(ip,rb,1),cur,SUBSEP)
-    hist[1] = cur[2]
-    disas(cur[1], rb, hsize + offset + 1)
 }
 
 function _db_output() {
@@ -210,6 +235,7 @@ function _db_output() {
     printf "%s\n", db_asm_sep
     _db_print_disas()
     printf "%s\n", db_sep
+    printf "[\033[1;36m#%d\033[0m] ", icount
 }
 
 function _db_eval() {
@@ -224,9 +250,6 @@ function _db_eval() {
     }
 }
 
-function _db_eval_jmp() {
-}
-
 function _db_parse_inp(str) {
     printf "idb> "
     getline str < "-"
@@ -235,7 +258,7 @@ function _db_parse_inp(str) {
         exit 0
     } else if (str == "d") {
         v = 1
-        disas(0, l)
+        disas(0, init_mem_len)
         v = 0
         _db_parse_inp()
     } else if (str == "r" && !ip) {
@@ -320,8 +343,8 @@ function interpret() {
 
 function disas(dp, rb, steps,    dc,rop,op,xm,ym,zm,x,y,rz) {
     dp = (dp == "" || dp < 0) ? 0 : dp
-    if (!steps) steps = l
-    while (dc++ < steps && dp < l) {
+    if (!steps) steps =init_mem_len
+    while (dc++ < steps && dp < init_mem_len) {
         rop = op = p[dp]
         xm  = int(op/100)   % 10
         ym  = int(op/1000)  % 10
