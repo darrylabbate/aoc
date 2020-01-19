@@ -118,7 +118,7 @@ END {
     init(prog)
     if (db) _db_init()
 
-    if (d)  disas(0, 0, l)
+    if (d)  disas(0, 0, init_mem_len)
     else    interpret()
 }
 
@@ -140,7 +140,8 @@ function print_ops(pp,rop,op,p1,p2,p3,    ln) {
             printf "   "
     } 
     ln = build_ins_ln(pp,rop,op,p1,p2,p3)
-    printf "%.*s\n", width - 3, ln
+    if (db) printf "%.*s\n", width - 3, ln
+    else    printf "%s\n", ln
     if (db && pp == ip)
         printf "\033[0m"
     return ln
@@ -343,7 +344,7 @@ function interpret() {
 
 function disas(dp, rb, steps,    dc,rop,op,xm,ym,zm,x,y,rz) {
     dp = (dp == "" || dp < 0) ? 0 : dp
-    if (!steps) steps =init_mem_len
+    if (!steps) steps = init_mem_len
     while (dc++ < steps && dp < init_mem_len) {
         rop = op = p[dp]
         xm  = int(op/100)   % 10
@@ -352,7 +353,7 @@ function disas(dp, rb, steps,    dc,rop,op,xm,ym,zm,x,y,rz) {
         op %= 100
         x   = xm == 1 ? p[dp+1] : xm == 2 ? p[p[dp+1]+rb] : p[p[dp+1]]
         y   = ym == 1 ? p[dp+2] : ym == 2 ? p[p[dp+2]+rb] : p[p[dp+2]]
-        rz  = zm ? p[ip+3]+rb : p[ip+3]
+        rz  = zm ? p[dp+3]+rb : p[dp+3]
         p[rz] = p[rz] == "" ? 0 : p[rz]
         if (db) {
             x  = xm == 1 ? x                          \
@@ -360,9 +361,9 @@ function disas(dp, rb, steps,    dc,rop,op,xm,ym,zm,x,y,rz) {
                : "*" p[dp+1] "->" x
             y  = ym == 1 ? y                          \
                : ym == 2 ? rel_str(p[dp+2],rb) "->" y \
-               : "*" p[ip+2] "->" y
+               : "*" p[dp+2] "->" y
             z  = zm ? rel_str(p[dp+3],rb) "->" p[rz]  \
-               : "*" p[ip+3] "->" p[rz]
+               : "*" p[dp+3] "->" p[rz]
         } else {
             x  = xm == 1 ? p[dp+1]                  \
                : xm == 2 ? rel_str(p[dp+1], rb_str) \
