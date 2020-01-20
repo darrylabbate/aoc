@@ -1,4 +1,4 @@
-# Intcode assembler, disassembler and interpreter
+# Intcode interpreter, assembler, disassembler and debugger
 #
 # USAGE:
 #   awk -f intcode.awk file             | Interpret a program
@@ -71,8 +71,9 @@ BEGIN {
         close("tput cols")
         lfile = length(ARGV[1])
         delete bp
-        db_sep     = _db_build_sep()
-        db_mem_sep = _db_build_sep("memory")
+        db_sep      = _db_build_sep()
+        db_mem_sep  = _db_build_sep("memory")
+        db_outv_sep = _db_build_sep("output")
     }
 }
 
@@ -116,28 +117,28 @@ function full_op(op,c,b,a) {
 
 END {
     init(prog)
-    if (db) _db_init()
+    if (db) {
+        _db_init()
+        _db_parse_inp()
+    }
 
     if (d)  disas(0, 0, init_mem_len)
     else    interpret()
 }
 
 function _db_init() {
-    if (asm_ln_count <= (height - 7))
+    if (asm_ln_count && asm_ln_count <= (height - 7))
         full_disas = 1
     for (j in p)
         mdigits += length(p[j]) + 1
     if (mdigits <= width)
         full_mem = 1
-    _db_parse_inp()
 }
 
 function print_ops(pp,rop,op,p1,p2,p3,    ln) {
     if (db) {
-        if (pp == ip)
-            printf "\033[32m-> "
-        else
-            printf "   "
+        if (pp == ip) printf "\033[32m-> "
+        else          printf "   "
     } 
     ln = build_ins_ln(pp,rop,op,p1,p2,p3)
     if (db) printf "%.*s\n", width - 3, ln
@@ -188,22 +189,25 @@ function init(prog) {
 }
 
 function _db_print_mem(    memstr) {
+    printf "%s\n", db_mem_sep
     if (full_mem) {
         for (j = 0; j < ip; j++)
             memstr = memstr sprintf("\033[90m%s ", p[j])
         memstr = memstr sprintf("\033[32m%s\033[0m", p[ip])
         for (j = ip+1; j < init_mem_len; j++)
             memstr = memstr " " p[j]
+        printf "%.*s\n", width, memstr
     } else {
-        memstr = "[" p[ip] "]"
-        for (j = ip+1; length(memstr) < width; j++) {
+        memstr = sprintf("\033[32m%s\033[0m", p[ip])
+        for (j = ip+1; length(memstr) < width + 9; j++) {
             memstr = memstr " " p[j]
         }
+        printf "%.*s\n", width + 9, memstr
     }
-    printf "%.*s\n", width, memstr
 }
 
 function _db_print_disas(   offset,cur) {
+    printf "%s\n", db_asm_sep
     if (full_disas) {
         for (j = 0; j < ip; j++) {
             if (hist[j]) {
@@ -231,9 +235,7 @@ function _db_print_disas(   offset,cur) {
 function _db_output() {
     printf "\033[2J\033[1;1H\033[0m"
     printf "RB => %d\n", rb
-    printf "%s\n", db_mem_sep
     _db_print_mem()
-    printf "%s\n", db_asm_sep
     _db_print_disas()
     printf "%s\n", db_sep
     printf "[\033[1;36m#%d\033[0m] ", icount
@@ -254,17 +256,8 @@ function _db_eval() {
 function _db_parse_inp(str) {
     printf "idb> "
     getline str < "-"
-    if (str == "q") {
-        print "Exit"
-        exit 0
-    } else if (str == "d") {
-        v = 1
-        disas(0, init_mem_len)
-        v = 0
-        _db_parse_inp()
-    } else if (str == "r" && !ip) {
-        printf "Starting program:\n"
-        interpret()
+    if (str ~ /^[0-9]/) {
+        stepc = str
     } else if (str ~ /^b/) {
         sub("b ","",str)
         if (!bp[str]) {
@@ -274,15 +267,30 @@ function _db_parse_inp(str) {
             printf "Breakpoint already set at memory location %d\n", str
         }
         _db_parse_inp()
-    } else if (str ~ /^[0-9]/) {
-        stepc = str
+    } else if (str == "d") {
+        v = 1
+        disas(0, init_mem_len)
+        v = 0
+        _db_parse_inp()
+    } else if (str == "h") {
+        printf "Help placeholder\n"
+        _db_parse_inp()
+    } else if (str == "o") {
+        if (outv[1]) flush_output()
+        else printf "Output vector is empty\n"
+        _db_parse_inp()
+    } else if (str == "q") {
+        print "Exit"
+        exit 0
+    } else if (str == "r" && !ip) {
+        printf "Starting program:\n"
+        interpret()
     } else if (str == "s") {
         stepc = 1
     } else {
-        printf "Unknown command: %s\n", str
+        printf "Invalid command: %s\n", str
         _db_parse_inp()
     }
-    return
 }
 
 function interpret() {
@@ -300,6 +308,10 @@ function interpret() {
         p[rz] = p[rz] == "" ? 0 : p[rz]
         if (db) {
             _db_eval()
+            if (op == 4)  {
+                x = x == "" ? 0 : x
+                outv[++outc] = x
+            }
         } else if (v) {
             px  = xm == 1 ? x                          \
                 : xm == 2 ? rel_str(p[ip+1],rb) "->" x \
@@ -398,14 +410,16 @@ function error(code, msg) {
 }
 
 function flush_output() {
-    printf "\n--- BEGIN OUTPUT ---\n"
+    if (db) printf "%s\n", db_outv_sep
+    else    printf "\n--- BEGIN OUTPUT ---\n"
     for (j = 1; j <= length(outv); j++) {
         if (a && outv[j] >= 0 && outv[j] <= 127)
             printf "%c", outv[j]
         else
             printf "%.f ", outv[j]
     }
-    printf "\n--- END OUTPUT ---\n"
+    if (db) printf "\n%s\n", db_sep
+    else    printf "\n--- END OUTPUT ---\n"
 }
 
 function _db_build_sep(txt,    sep) {
