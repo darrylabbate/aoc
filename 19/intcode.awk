@@ -7,6 +7,7 @@
 #
 # AVAILABLE SWITCHES:
 #   a  | [1] ASCII mode (converts input vector and outputs to ASCII)
+#   c  | [1] Compile and print intcode program
 #   db | [1] Invoke interactive debugging session
 #   d  | [1] Dump disassembly
 #   i  | [n,m,...] The input vector the program reads from
@@ -116,6 +117,11 @@ function full_op(op,c,b,a) {
 }
 
 END {
+    if (c) {
+        print prog
+        exit 0
+    }
+
     init(prog)
     if (db) {
         _db_init()
