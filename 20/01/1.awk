@@ -1,10 +1,10 @@
-{ a[NR] = $0 }
+{ a[$0]++ }
 
 END {
     for (i in a)
         for (j in a)
-            if (a[i] + a[j] == 2020) {
-                print a[i] * a[j]
+            if (i + j == 2020) {
+                print i * j
                 exit
             }
 }
