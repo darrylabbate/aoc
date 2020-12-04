@@ -1,5 +1,5 @@
 BEGIN {
-    RS = "\n\n"
+    RS = ""
     FS = "[ :\n]"
 }
 

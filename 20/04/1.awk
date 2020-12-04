@@ -1,4 +1,4 @@
-BEGIN{ RS = "\n\n" }
+BEGIN { RS = "" }
 
 /byr/ && /iyr/ && /eyr/ && /hgt/ && /hcl/ && /ecl/ && /pid/ {
     n++
