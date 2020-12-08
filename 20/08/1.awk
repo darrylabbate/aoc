@@ -7,7 +7,7 @@
 
 END {
     i = 1
-    while (i <= NR) {
+    while (1) {
         if (i in r) {
             print a
             exit
