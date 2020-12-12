@@ -4,37 +4,37 @@ BEGIN {
     wy = 1
 }
 
-{ v = substr($0,2,NF-1) }
+{ n = substr($0, 2, NF-1) }
 
-/N/ { wy += v }
-/E/ { wx += v }
-/S/ { wy -= v }
-/W/ { wx -= v }
+/N/ { wy += n }
+/E/ { wx += n }
+/S/ { wy -= n }
+/W/ { wx -= n }
 
 /L/ {
-    if (v == 90) {
-        wy1 = wx
+    if (n == 90) {
+        wy1 =  wx
         wx1 = -wy
-    } else if (v == 180) {
+    } else if (n == 180) {
         wy1 = -wy
         wx1 = -wx
-    } else if (v == 270) {
+    } else if (n == 270) {
         wy1 = -wx
-        wx1 = wy
+        wx1 =  wy
     }
     wx = wx1
     wy = wy1
 }
 
 /R/ {
-    if (v == 90) {
+    if (n == 90) {
         wy1 = -wx
-        wx1 = wy
-    } else if (v == 180) {
+        wx1 =  wy
+    } else if (n == 180) {
         wy1 = -wy
         wx1 = -wx
-    } else if (v == 270) {
-        wy1 = wx
+    } else if (n == 270) {
+        wy1 =  wx
         wx1 = -wy
     }
     wx = wx1
@@ -42,12 +42,12 @@ BEGIN {
 }
 
 /F/ {
-    x += wx * v
-    y += wy * v
+    x += wx * n
+    y += wy * n
 }
 
 END {
     x = x < 0 ? -x : x
     y = y < 0 ? -y : y
-    print x+y
+    print x + y
 }
