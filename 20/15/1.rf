@@ -1,0 +1,29 @@
+input = {
+    // 0,3,6 // 436
+    // 3,2,1 // 438
+    // 3,1,2 // 1836
+    0,1,5,10,3,12,19 // 1373
+}
+
+for x in 2020 num[x] = 0
+
+for n in input {
+    num[n]++
+    spoken[++t] = n
+}
+
+for t in #input+1..2020 {
+    if num[spoken[t-1]] == 1 {
+        num[0]++
+        spoken[t] = 0
+    } else {
+        for i in t-2..1 {
+            if spoken[i] == spoken[t-1] {
+                num[spoken[t] = t-i-1]++
+                break
+            }
+        }
+    }
+}
+
+spoken[2020]
