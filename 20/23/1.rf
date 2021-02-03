@@ -1,0 +1,36 @@
+local input = 253149867
+
+local cups, current, next, a, b, c, t;
+
+cups[0] = 0
+for i in #input-2 {
+    cups[input[i]] = input[i+1]
+}
+cups[input[8]] = input[0]
+
+current = input[0]
+for m in 1..100 {
+    a = cups[current]
+    b = cups[a]
+    c = cups[b]
+    
+    next = current - 1
+    next = next < 1 ? 9 : next
+    while a == next || b == next || c == next {
+        next -= 1
+        next = next < 1 ? 9 : next
+    }
+
+    cups[current] = cups[c]
+    t = cups[next]
+    cups[next] = a
+    cups[c] = t
+    current = cups[current]
+}
+
+i = cups[1]
+while i != 1 {
+    answer ::= i
+    i = cups[i]
+}
+answer
