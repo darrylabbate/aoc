@@ -30,7 +30,7 @@ for m in 1..100 {
 
 i = cups[1]
 while i != 1 {
-    answer ::= i
+    answer #= i
     i = cups[i]
 }
 answer
