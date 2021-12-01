@@ -1,0 +1,10 @@
+f = open(arg[1])
+while !eof(f) {
+    c = read(f)
+    n += x && y && z && (c + y + z) > x + y + z
+    x = y
+    y = z
+    z = c
+}
+close(f)
+n

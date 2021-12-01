@@ -1,0 +1,8 @@
+f = open(arg[1])
+while !eof(f) {
+    c = read(f)
+    n += p && c > p
+    p = c
+}
+close(f)
+n
