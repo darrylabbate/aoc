@@ -1,0 +1,12 @@
+f = open(arg[1])
+while !eof(f) {
+    c = split(read(f))
+    if c[0] ~ /up/
+        d -= c[1]
+    elif c[0] ~ /down/
+        d += c[1]
+    else
+        h += c[1]
+}
+close(f)
+h * d
