@@ -1,0 +1,11 @@
+f = open(arg[1])
+while !eof(f) && b = read(f) {
+    for i,c in b
+        a[i,c]++
+}
+close(f)
+for i in 11 {
+    n <<= 1
+    n |= a[i,0] < a[i,1]
+}
+print n * (n ^ 0xfff)

@@ -1,0 +1,27 @@
+f = open(arg[1])
+while !eof(f) && b = read(f) {
+    ++ln
+    oxy_set[ln] = co2_set[ln] = b
+}
+close(f)
+for i in 11 {
+    for n in oxy_set oxy_bits[i,n[i]]++
+    for n in co2_set co2_bits[i,n[i]]++
+    max #= oxy_bits[i,0] <= oxy_bits[i,1]
+    min #= co2_bits[i,0] >  co2_bits[i,1]
+    for k,v in oxy_set {
+        if #oxy_set == 1
+            break
+        elif v !~ "^"#max
+            oxy_set[k] = null
+    }
+    for k,v in co2_set {
+        if #co2_set == 1
+            break
+        elif v !~ "^"#min
+            co2_set[k] = null
+    }
+}
+for n in oxy_set oxy = n
+for n in co2_set co2 = n
+print num(oxy,2) * num(co2,2)
