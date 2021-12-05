@@ -1,0 +1,55 @@
+fn min(x,y) { return x < y ? x : y }
+fn max(x,y) { return x > y ? x : y }
+
+fn calc_score(board, t) {
+    local res = 0
+    for i in ..24:5
+        for j in 4
+            res += board[i+j] > t && numbers[board[i+j]]
+    return res * numbers[t]
+}
+
+fn min_max_col(board) {
+    local max_col = 100
+    for j in 4 {
+        local max_cell = 0
+        for i in ..24:5
+            max_cell = max(max_cell, board[i+j])
+        max_col = min(max_col, max_cell)
+    }
+    return max_col
+}
+
+fn min_max_row(board) {
+    local max_row = 100
+    for i in ..24:5 {
+        local max_cell = 0
+        for j in 4
+            max_cell = max(max_cell, board[i+j])
+        max_row = min(max_row, max_cell)
+    }
+    return max_row
+}
+
+f = open(arg[1])
+while !eof(f) {
+    if ++ln == 1 {
+        numbers = split(read(f), ",")
+        for i,n in numbers
+            turn[n] = i
+    } else {
+        boards[ln] = split(read(f,15*5+1))
+        for i,v in boards[ln]
+            boards[ln,i] = turn[v]
+    }
+}
+close(f)
+for i, board in boards
+    mins[i] = min(min_max_row(board), min_max_col(board))
+t = 0
+for i, victory in mins
+    if victory > t {
+        t = victory
+        b = i
+    }
+print calc_score(boards[b], t)
