@@ -1,0 +1,18 @@
+f = open(arg[1])
+while !eof(f) {
+    if !(read(f) ~ /(\d+),(\d+) -> (\d+),(\d+)/)
+        break
+    if $1 == $3 {
+        for i in num($2)..num($4)
+            grid[i,$1]++
+    } elif $2 == $4 {
+        for i in num($1)..num($3)
+            grid[$2,i]++
+    }
+}
+close(f)
+for g in grid
+    for c in g
+        if c > 1
+            n++
+print n
