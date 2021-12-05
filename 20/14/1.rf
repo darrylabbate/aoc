@@ -1,0 +1,14 @@
+f = open(arg[1])
+while !eof(f) {
+    ln = read(f)
+    if ln ~ /mask = (\w+)/ {
+        mask_and = num(gsub($1, "X", "1"), 2)
+        mask_or  = num(gsub($1, "X", "0"), 2)
+    } elif ln ~ /(.+ =) (\d+)/ {
+        eval($1 # ($2 & mask_and | mask_or))
+    }
+}
+close(f)
+for i in mem
+    res += i
+print res

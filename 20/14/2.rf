@@ -1,0 +1,35 @@
+fn base_addr(addr, mask) {
+    local base
+    for i,v in fmt("%036b", addr)
+        base #= mask[i] == "X" ? "X" : v | mask[i]
+    return base
+}
+
+fn gen_addrs(base) {
+    if base ~ /X/ {
+        addrs[n++] = gen_addrs(sub(base, "X", "0"))
+        addrs[n++] = gen_addrs(sub(base, "X", "1"))
+    } else {
+        return num(base,2)
+    }
+}
+
+f = open(arg[1])
+while !eof(f) {
+    ln = read(f)
+    if !ln break
+    if ln ~ /mask = (\w+)/ {
+        mask = $1
+    } elif ln ~ /mem\[(\d+)\] = (\d+)/ {
+        n = 0
+        addrs = {}
+        gen_addrs(base_addr($1, mask))
+        for i in addrs {
+            mem[i] = $2
+        }
+    }
+}
+close(f)
+for i in mem
+    res += i
+print res
