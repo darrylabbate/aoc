@@ -1,0 +1,11 @@
+for i in split(read(open(arg[1])),",")
+    l[i]++
+for i in 1..80 {
+    t = l[0]
+    for j in 7
+        l[j] = l[j+1]
+    l[6] += l[8] = t
+}
+for i in l
+    r += i
+print r
