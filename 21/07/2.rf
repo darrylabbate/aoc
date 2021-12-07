@@ -1,0 +1,12 @@
+for k,v in split(read(open(arg[1])),",") {
+    c[k] = v
+    m = v > m ? v : m
+}
+l = 99999999
+for i in m-1 {
+    f = 0
+    for j in c
+        f += (abs(j-i)**2 + abs(j-i)) / 2
+    l = l > f ? f : l
+}
+print l
