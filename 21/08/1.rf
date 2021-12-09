@@ -1,0 +1,6 @@
+f = open(arg[1])
+while !eof(f) && l = split(read(f), /\|/)
+    for o in split(l[1])
+        s += 2347 ~ #o
+close(f)
+print s

@@ -1,0 +1,20 @@
+for k,v { 42, 17, 34, 39, 30, 37, 41, 25, 49, 45 }
+    sums[v] = k
+f = open(arg[1])
+while !eof(f) && l = split(read(f), /\|/) {
+    n = {}
+    for c in split(l[0], "")
+        n[c]++
+    for c in "abcdefg"
+        l[1] = gsub(l[1], c, n[c])
+    s1 = ""
+    for o in split(l[1]) {
+        s2 = 0
+        for c in o
+            s2 += c
+        s1 #= sums[s2]
+    }
+    s += s1
+}
+close(f)
+print s
