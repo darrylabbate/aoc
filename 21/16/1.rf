@@ -1,0 +1,38 @@
+fn bin(n) { return num(n,2) }
+
+fn parse(d) {
+    sov += bin(d[..2])
+    local T = bin(d[3..5])
+    d = d[6..]
+    if T == 4 {
+        do {
+            lv #= d[1..4]
+            c = d[0]
+            d = d[5..]
+        } while c
+    } else {
+        local I = d[0], L
+        d = d[1..]
+        if !I {
+            L = bin(d[..14])
+            d = d[15..]
+            local dd = d[..L-1]
+            while dd ~ /[01]/ { 
+                dd = parse(dd)
+            }
+            d = d[L..]
+        } else {
+            L = bin(d[..10])
+            d = d[11..]
+            for _ in L-1 {
+                d = parse(d)
+            }
+        }
+    }
+    return d
+}
+
+for c in read(open(arg[1] || "input"))
+    bits #= fmt("%04b", num(c,16))
+parse(bits)
+print(sov)
