@@ -1,4 +1,4 @@
-f = open(arg[1])
+f = open(arg[1] || "input")
 while !eof(f) {
     if !(read(f) ~ /(\d+),(\d+) -> (\d+),(\d+)/)
         break
@@ -15,4 +15,4 @@ for g in grid
     for c in g
         if c > 1
             n++
-print n
+print(n)

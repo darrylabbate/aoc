@@ -1,4 +1,4 @@
-f = open(arg[1])
+f = open(arg[1] || "input")
 while !eof(f) {
     c = split(read(f))
     if c[0] ~ /up/
@@ -11,4 +11,4 @@ while !eof(f) {
     }
 }
 close(f)
-h * d
+print(h * d)

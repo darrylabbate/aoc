@@ -1,4 +1,4 @@
-for i in split(read(open(arg[1])),",")
+for i in split(read(open(arg[1] || "input")),",")
     l[i]++
 for i in 1..80 {
     t = l[0]
@@ -8,4 +8,4 @@ for i in 1..80 {
 }
 for i in l
     r += i
-print r
+print(r)

@@ -1,4 +1,4 @@
-f = open(arg[1])
+f = open(arg[1] || "input")
 while !eof(f) {
     c = read(f)
     n += x && y && z && (c + y + z) > x + y + z
@@ -7,4 +7,4 @@ while !eof(f) {
     z = c
 }
 close(f)
-n
+print(n)

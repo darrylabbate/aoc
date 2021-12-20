@@ -1,4 +1,4 @@
-for k,v in split(read(open(arg[1])),",") {
+for k,v in split(read(open(arg[1] || "input")),",") {
     c[k] = v
     m = v > m ? v : m
 }
@@ -9,4 +9,4 @@ for i in m-1 {
         f += (abs(j-i)**2 + abs(j-i)) / 2
     l = l > f ? f : l
 }
-print l
+print(l)

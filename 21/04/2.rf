@@ -31,7 +31,7 @@ fn min_max_row(board) {
     return max_row
 }
 
-f = open(arg[1])
+f = open(arg[1] || "input")
 while !eof(f) {
     if ++ln == 1 {
         numbers = split(read(f), ",")
@@ -52,4 +52,4 @@ for i, victory in mins
         t = victory
         b = i
     }
-print calc_score(boards[b], t)
+print(calc_score(boards[b], t))

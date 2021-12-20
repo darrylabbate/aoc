@@ -1,4 +1,4 @@
-f = open(arg[1])
+f = open(arg[1] || "input")
 while !eof(f) && b = read(f) {
     ++ln
     oxy_set[ln] = co2_set[ln] = b
@@ -24,4 +24,4 @@ for i in 11 {
 }
 for n in oxy_set oxy = n
 for n in co2_set co2 = n
-print num(oxy,2) * num(co2,2)
+print(num(oxy,2) * num(co2,2))

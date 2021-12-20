@@ -1,6 +1,6 @@
 for k,v { 42, 17, 34, 39, 30, 37, 41, 25, 49, 45 }
     sums[v] = k
-f = open(arg[1])
+f = open(arg[1] || "input")
 while !eof(f) && l = split(read(f), /\|/) {
     n = {}
     for c in split(l[0], "")
@@ -17,4 +17,4 @@ while !eof(f) && l = split(read(f), /\|/) {
     s += s1
 }
 close(f)
-print s
+print(s)

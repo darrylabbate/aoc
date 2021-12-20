@@ -1,4 +1,4 @@
-f = open(arg[1])
+f = open(arg[1] || "input")
 while !eof(f) && b = read(f) {
     for i,c in b
         a[i,c]++
@@ -8,4 +8,4 @@ for i in 11 {
     n <<= 1
     n |= a[i,0] < a[i,1]
 }
-print n * (n ^ 0xfff)
+print(n * (n ^ 0xfff))
