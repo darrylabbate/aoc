@@ -1,0 +1,35 @@
+fn idx(g,y,x) {
+    local r
+    for dy in [-1,0,1]
+        for dx in [-1,0,1]
+            r #= g[y+dy,x+dx] || 0
+    return num(r,2)
+}
+
+steps = 2
+f = open(arg[1] || "input")
+algo = gsub(gsub(read(f), /\./, 0), /#/, 1)
+read(f)
+y = 0
+while !eof(f) && line = read(f) {
+    for i,c in line
+        img[y,i] = c == "#"
+    y++
+}
+close(f)
+ly = y - 1
+lx = #img[0] - 1
+for s in 1..steps {
+    for y in -s..ly+s {
+        for x in -s..lx+s {
+            i = idx(img, y, x)
+            next[y,x] = s & 1 ? !algo[i] : algo[i ^ 0x1ff]
+        }
+    }
+    img = next
+    next = []
+}
+for y in -steps..ly+steps
+    for x in -steps..lx+steps
+        n += img[y,x]
+print(n)
