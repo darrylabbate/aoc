@@ -1,4 +1,4 @@
-f = open(arg[1])
+f = open(arg[1] || "input")
 while !eof(f) {
     ln = read(f)
     if ln ~ /mask = (\w+)/ {
@@ -11,4 +11,4 @@ while !eof(f) {
 close(f)
 for i in mem
     res += i
-print res
+print(res)
