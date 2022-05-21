@@ -1,0 +1,22 @@
+fn min(x,y) { return x < y ? x : y }
+fn max(x,y) { return x > y ? x : y }
+
+min_id = 1000
+max_id = 0
+f = open(arg[1] || "input")
+while !eof(f) {
+    if !(l = read(f)) break
+    l = gsub(l, "B", "1")
+    l = gsub(l, "F", "0")
+    l = gsub(l, "R", "1")
+    l = gsub(l, "L", "0")
+    id = num(l[0..6], 2) * 8 + num(l[7..9], 2)
+    min_id = min(min_id, id)
+    max_id = max(max_id, id)
+    seats[id]++
+}
+close(f)
+for i in min_id..max_id {
+    if !seats[i]
+        print(i)
+}

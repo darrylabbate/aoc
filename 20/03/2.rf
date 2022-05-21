@@ -1,0 +1,19 @@
+fn t(r,d) {
+    local i = 0, j = 0, n = 0
+    while i < #a {
+        n += a[i,j%l] == "#"
+        i += d
+        j += r
+    }
+    return n
+}
+
+f = open(arg[1] || "input")
+while !eof(f) {
+    if !(l = read(f)) break
+    a[i++] = l
+}
+close(f)
+
+l = #a[0]
+print(t(1,1) * t(3,1) * t(5,1) * t(7,1) * t(1,2))

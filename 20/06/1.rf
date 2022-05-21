@@ -1,0 +1,12 @@
+f = open(arg[1] || "input")
+ln = 1
+while !eof(f) {
+    while l = read(f)
+        for c in l
+            y[ln,c]++
+    ln++
+}
+close(f)
+for i in 1..ln
+    n += #y[i]
+print(n)

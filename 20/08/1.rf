@@ -1,0 +1,19 @@
+f = open(arg[1] || "input")
+n = 0
+while !eof(f) {
+    if !(l = split(read(f))) break
+    m[n] = l[0]
+    o[n] = l[1]
+    n++
+}
+close(f)
+i = 0
+loop {
+    if r[i] {
+        print(a)
+        exit()
+    }
+    r[i] = 1
+    m[i] == "acc" ? a += o[i++] :
+    m[i] == "jmp" ? i += o[i] : ++i
+}

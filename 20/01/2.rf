@@ -1,0 +1,13 @@
+f = open(arg[1] || "input")
+while !eof(f) {
+    if !(l = read(f)) break
+    a[l]++
+}
+close(f)
+for i,v in a
+    for j,v in a
+        for k,v in a
+            if i + j + k  == 2020 {
+                print(i * j * k)
+                exit()
+            }

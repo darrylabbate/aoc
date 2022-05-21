@@ -1,0 +1,26 @@
+fn cost(b) {
+    local n =  0
+    for x,_ in all {
+        if bag[b,x] {
+            n += bag[b,x]
+            n += bag[b,x] * cost(x)
+        }
+    }
+    return n
+}
+
+f = open(arg[1] || "input")
+while !eof(f) {
+    if !(l = read(f)) break
+    l ~ /(.*) bags contain (.*)/
+    curr = $1
+    all[curr] = 1
+    if $2 !~ /no other bags/ {
+        for s in split($2, ", ") {
+            s ~ /(\d+) (.*) bags?\.?/
+            bag[curr,$2] = $1
+        }
+    }
+}
+close(f)
+print(cost("shiny gold"))

@@ -1,0 +1,9 @@
+f = open(arg[1] || "input")
+j = 0
+while !eof(f) {
+    if !(l = read(f)) break
+    n += l[j%#l] == "#"
+    j += 3
+}
+close(f)
+print(n)

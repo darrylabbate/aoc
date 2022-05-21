@@ -1,0 +1,22 @@
+f = open(arg[1] || "input")
+while !eof(f) {
+    if !(l = read(f)) break
+    l ~ /(.*) bags contain (.*)/
+    if l ~ /shiny gold/ && $1 != "shiny gold" {
+        gold[$1]++
+    }
+    curr = $1
+    if $2 !~ /no other bags/ {
+        for s in split($2, ", ") {
+            s ~ /(\d+) (.*) bags?\.?/
+            bag[curr,$2] = $1
+        }
+    }
+}
+close(f)
+for _,__ in bag
+    for y,_ in bag
+        for k,_ in bag[y]
+            if gold[k]
+                gold[y] = 1
+print(#gold)

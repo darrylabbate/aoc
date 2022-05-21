@@ -1,0 +1,16 @@
+fn max(x,y) { return x > y ? x : y }
+
+max_id = 0
+f = open(arg[1] || "input")
+while !eof(f) {
+    if !(l = read(f)) break
+    l = gsub(l, "B", "1")
+    l = gsub(l, "F", "0")
+    l = gsub(l, "R", "1")
+    l = gsub(l, "L", "0")
+    row = num(l[0..6], 2)
+    col = num(l[7..9], 2)
+    max_id = max(max_id, row * 8 + col)
+}
+close(f)
+print(max_id)

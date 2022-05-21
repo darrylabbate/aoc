@@ -1,0 +1,15 @@
+f = open(arg[1] || "input")
+while !eof(f) {
+    ln = ""
+    while l = read(f)
+        ln #= l
+    n += ln ~ /byr/ &&
+         ln ~ /iyr/ &&
+         ln ~ /eyr/ &&
+         ln ~ /hgt/ &&
+         ln ~ /hcl/ &&
+         ln ~ /ecl/ &&
+         ln ~ /pid/
+}
+close(f)
+print(n)

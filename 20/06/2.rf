@@ -1,0 +1,17 @@
+f = open(arg[1] || "input")
+ln = 1
+while !eof(f) {
+    p = 0
+    while l = read(f) {
+        ++p
+        for c in l
+            y[ln,c]++
+    }
+    for i,c in y[ln] {
+        n += y[ln,i] == p
+        y[ln,i] = 0
+    }
+    ln++
+}
+close(f)
+print(n)
