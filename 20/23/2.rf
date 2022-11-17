@@ -1,6 +1,4 @@
-local input = 253149867
-
-local cups, current, next, a, b, c, t;
+local input = arg[1] or 253149867
 
 cups[0] = 0
 for i in #input-2 {
@@ -32,4 +30,4 @@ for m in 1..10_000_000 {
     current = cups[current]
 }
 
-cups[1] * cups[cups[1]]
+print(cups[1] * cups[cups[1]])

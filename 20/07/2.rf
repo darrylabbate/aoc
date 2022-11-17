@@ -9,9 +9,9 @@ fn cost(b) {
     return n
 }
 
-f = open(arg[1] || "input")
-while !eof(f) {
-    if !(l = read(f)) break
+f = open(arg[1] or "input")
+while read(f,0) {
+    l = read(f)
     l ~ /(.*) bags contain (.*)/
     curr = $1
     all[curr] = 1

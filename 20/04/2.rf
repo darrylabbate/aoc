@@ -1,8 +1,8 @@
-f = open(arg[1] || "input")
-while !eof(f) {
+f = open(arg[1] or "input")
+while read(f,0) {
     ln = ""
     while l = read(f)
-        ln #= l # " "
+        ln #= "#l "
     if ln !~ /byr:(\d{4})/ || $1 < 1920 || $1 > 2002
         continue
     if ln !~ /iyr:(\d{4})/ || $1 < 2010 || $1 > 2020

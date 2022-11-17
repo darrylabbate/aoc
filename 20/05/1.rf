@@ -1,10 +1,9 @@
 fn max(x,y) { return x > y ? x : y }
 
 max_id = 0
-f = open(arg[1] || "input")
-while !eof(f) {
-    if !(l = read(f)) break
-    l = gsub(l, "B", "1")
+f = open(arg[1] or "input")
+while read(f,0) {
+    l = gsub(read(f), "B", "1")
     l = gsub(l, "F", "0")
     l = gsub(l, "R", "1")
     l = gsub(l, "L", "0")

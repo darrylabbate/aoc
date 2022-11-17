@@ -1,6 +1,6 @@
 number = 2020
 
-input = split(read(open(arg[1] || "input")), ",")
+input = split(read(open(arg[1] or "input")), ",")
 
 for n in input {
     nums[n]++

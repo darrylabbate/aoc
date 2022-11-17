@@ -1,6 +1,6 @@
-f = open(arg[1] || "input")
+f = open(arg[1] or "input")
 ln = 1
-while !eof(f) {
+while read(f,0) {
     while l = read(f)
         for c in l
             y[ln,c]++

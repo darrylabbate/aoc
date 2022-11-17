@@ -1,7 +1,7 @@
-f = open(arg[1] || "input")
+f = open(arg[1] or "input")
 n = 0
-while !eof(f) {
-    if !(l = split(read(f))) break
+while read(f,0) {
+    l = split(read(f))
     m[n] = l[0]
     o[n] = l[1]
     n++

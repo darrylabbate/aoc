@@ -1,5 +1,5 @@
-f = open(arg[1] || "input")
-while !eof(f) {
+f = open(arg[1] or "input")
+while read(f,0) {
     ln = read(f)
     if ln ~ /mask = (\w+)/ {
         mask_and = num(gsub($1, "X", "1"), 2)

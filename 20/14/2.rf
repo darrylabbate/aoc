@@ -14,10 +14,9 @@ fn gen_addrs(base) {
     }
 }
 
-f = open(arg[1] || "input")
-while !eof(f) {
+f = open(arg[1] or "input")
+while read(f,0) {
     ln = read(f)
-    if !ln break
     if ln ~ /mask = (\w+)/ {
         mask = $1
     } elif ln ~ /mem\[(\d+)\] = (\d+)/ {

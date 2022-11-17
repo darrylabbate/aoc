@@ -1,6 +1,4 @@
-local input = 253149867
-
-local cups, current, next, a, b, c, t;
+local input = arg[1] or 253149867
 
 cups[0] = 0
 for i in #input-2 {
@@ -33,4 +31,4 @@ while i != 1 {
     answer #= i
     i = cups[i]
 }
-answer
+print(answer)

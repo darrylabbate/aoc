@@ -1,7 +1,6 @@
-f = open(arg[1] || "input")
-while !eof(f) {
-    if !(l = read(f)) break
-    l ~ /(\d+)-(\d+) ([a-z]): ([a-z]+)/
+f = open(arg[1] or "input")
+while read(f,0) {
+    read(f) ~ /(\d+)-(\d+) ([a-z]): ([a-z]+)/
     len = #$4 - #gsub($4, $3)
     n += (len >= $1) && (len <= $2)
 }
