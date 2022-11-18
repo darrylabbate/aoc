@@ -1,5 +1,5 @@
-f = open(arg[1] || "input")
-while !eof(f) && b = read(f) {
+f = open(arg[1] or "input")
+while b = read(f) {
     for i,c in b
         a[i,c]++
 }

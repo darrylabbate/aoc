@@ -1,4 +1,4 @@
-for i in split(read(open(arg[1] || "input")),",")
+for i in split(read(open(arg[1] or "input")),",")
     l[i]++
 for i in 1..256 {
     t = l[0]

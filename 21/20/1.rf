@@ -1,3 +1,5 @@
+STEPS = 2
+
 fn idx(g,y,x) {
     local r
     for dy in [-1,0,1]
@@ -6,12 +8,11 @@ fn idx(g,y,x) {
     return num(r,2)
 }
 
-steps = 2
-f = open(arg[1] || "input")
+f = open(arg[1] or "input")
 algo = gsub(gsub(read(f), /\./, 0), /#/, 1)
 read(f)
 y = 0
-while !eof(f) && line = read(f) {
+while line = read(f) {
     for i,c in line
         img[y,i] = c == "#"
     y++
@@ -19,7 +20,7 @@ while !eof(f) && line = read(f) {
 close(f)
 ly = y - 1
 lx = #img[0] - 1
-for s in 1..steps {
+for s in 1..STEPS {
     for y in -s..ly+s {
         for x in -s..lx+s {
             i = idx(img, y, x)
@@ -29,7 +30,7 @@ for s in 1..steps {
     img = next
     next = []
 }
-for y in -steps..ly+steps
-    for x in -steps..lx+steps
+for y in -STEPS..ly+STEPS
+    for x in -STEPS..lx+STEPS
         n += img[y,x]
 print(n)

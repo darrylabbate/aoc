@@ -31,8 +31,8 @@ fn min_max_row(board) {
     return max_row
 }
 
-f = open(arg[1] || "input")
-while !eof(f) {
+f = open(arg[1] or "input")
+while read(f,0) {
     if ++ln == 1 {
         numbers = split(read(f), ",")
         for i,n in numbers

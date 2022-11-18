@@ -1,5 +1,5 @@
-f = open(arg[1] || "input")
-while !eof(f) && b = read(f) {
+f = open(arg[1] or "input")
+while b = read(f) {
     ++ln
     oxy_set[ln] = co2_set[ln] = b
 }
@@ -12,13 +12,13 @@ for i in 11 {
     for k,v in oxy_set {
         if #oxy_set == 1
             break
-        elif v !~ "^"#max
+        elif v !~ "^#max"
             oxy_set[k] = null
     }
     for k,v in co2_set {
         if #co2_set == 1
             break
-        elif v !~ "^"#min
+        elif v !~ "^#min"
             co2_set[k] = null
     }
 }

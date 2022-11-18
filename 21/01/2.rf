@@ -1,5 +1,5 @@
-f = open(arg[1] || "input")
-while !eof(f) {
+f = open(arg[1] or "input")
+while read(f,0) {
     c = read(f)
     n += x && y && z && (c + y + z) > x + y + z
     x = y

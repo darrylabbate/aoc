@@ -1,14 +1,14 @@
-fn bin(n) { num(n,2) }
+fn bin(n) { return num(n,2) }
 
 ops = {
-    fn(t,s) { s = 0 for n in t s += n s },
-    fn(t,p) { p = 1 for n in t p *= n p },
-    fn(t,m) { m = 9**9 for n in t m = n < m ? n : m m },
-    fn(t,m) { m = 0 for n in t m = n > m ? n : m m },
-    fn(t,l) { bin(l) },
-    fn(t)   { t[0] >  t[1] },
-    fn(t)   { t[0] <  t[1] },
-    fn(t)   { t[0] == t[1] }
+    fn(t,s) { s = 0 for n in t s += n return s },
+    fn(t,p) { p = 1 for n in t p *= n return p },
+    fn(t,m) { m = 9**9 for n in t m = n < m ? n : m return m },
+    fn(t,m) { m = 0 for n in t m = n > m ? n : m return m },
+    fn(t,l) { return bin(l) },
+    fn(t)   { return t[0] >  t[1] },
+    fn(t)   { return t[0] <  t[1] },
+    fn(t)   { return t[0] == t[1] }
 }
 
 fn parse(d) {
@@ -27,7 +27,7 @@ fn parse(d) {
             L = bin(d[..14])
             d = d[15..]
             local dd = d[..L-1]
-            while dd ~ /[01]/ { 
+            while #dd > 1 && dd ~ /[01]/ { 
                 ss = parse(dd)
                 dd = ss[0]
                 sp[i++] = ss[1]
@@ -46,6 +46,6 @@ fn parse(d) {
     return [ d, ops[T](sp,lv) ]
 }
 
-for c in read(open(arg[1] || "input"))
+for c in read(open(arg[1] or "input"))
     bits #= fmt("%04b", num(c,16))
 print(parse(bits)[1])

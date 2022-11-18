@@ -6,7 +6,6 @@ fn parse(d) {
     d = d[6..]
     if T == 4 {
         do {
-            lv #= d[1..4]
             c = d[0]
             d = d[5..]
         } while c
@@ -17,7 +16,7 @@ fn parse(d) {
             L = bin(d[..14])
             d = d[15..]
             local dd = d[..L-1]
-            while dd ~ /[01]/ { 
+            while #dd > 1 && dd ~ /[01]/ { 
                 dd = parse(dd)
             }
             d = d[L..]
@@ -32,7 +31,7 @@ fn parse(d) {
     return d
 }
 
-for c in read(open(arg[1] || "input"))
+for c in read(open(arg[1] or "input"))
     bits #= fmt("%04b", num(c,16))
 parse(bits)
 print(sov)

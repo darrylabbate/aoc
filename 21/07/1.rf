@@ -1,4 +1,4 @@
-for k,v in split(read(open(arg[1] || "input")),",") {
+for k,v in split(read(open(arg[1] or "input")),",") {
     c[k] = v
     m = v > m ? v : m
 }

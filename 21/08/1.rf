@@ -1,5 +1,5 @@
-f = open(arg[1] || "input")
-while !eof(f) && l = split(read(f), /\|/)
+f = open(arg[1] or "input")
+while l = split(read(f), /\|/)
     for o in split(l[1])
         s += 2347 ~ #o
 close(f)
