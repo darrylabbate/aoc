@@ -1,0 +1,13 @@
+f = open(arg[1] or "input")
+while read(f,0) {
+    v = read(f)
+    j[v]++
+    maxv = maxv < v ? v : maxv
+}
+close(f)
+j[0]++
+n[maxv+3] = 1
+for i in maxv..0
+    if j[i] != null
+        n[i] += n[i+1] + n[i+2] + n[i+3]
+print(n[0])

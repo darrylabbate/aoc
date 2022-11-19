@@ -1,0 +1,22 @@
+turn = [
+    fn {},
+    fn { wyy =  wx  wxx = -wy },
+    fn { wyy = -wy  wxx = -wx },
+    fn { wyy = -wx  wxx =  wy },
+]
+
+move["N"] = fn (v) { wy += v }
+move["E"] = fn (v) { wx += v }
+move["S"] = fn (v) { wy -= v }
+move["W"] = fn (v) { wx -= v }
+move["L"] = fn (v) { turn[ (v/90) % 4]()  wx = wxx  wy = wyy }
+move["R"] = fn (v) { turn[-(v/90) % 4]()  wx = wxx  wy = wyy }
+move["F"] = fn (v) { x += wx * v  y += wy * v }
+
+wx = 10
+wy = 1
+f = open(arg[1] or "input")
+while read(f) ~ /([A-Z])(\d+)/
+    move[$1]($2)
+close(f)
+print(abs(x) + abs(y))

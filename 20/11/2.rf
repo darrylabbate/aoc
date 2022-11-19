@@ -1,0 +1,44 @@
+f = open(arg[1] or "input")
+ln = 0
+while read(f,0) {
+    for i,c in split(read(f),"")
+        s1[i,ln] = s2[i,ln] = c
+    ln++
+}
+close(f)
+
+loop {
+    change = 0
+    for y in ln-1 for x in #s1-1 {
+        if s1[x,y] == "."
+            continue
+        c = 0
+        for dy in [-1,0,1] for dx in [-1,0,1] {
+            if !dy && !dx
+                continue
+            yy = y + dy
+            xx = x + dx
+            while yy >= 0 && xx >= 0 && yy < ln && xx < #s1 {
+                c += s1[xx,yy] == "#"
+                if s1[xx,yy] != "."
+                    break
+                yy += dy
+                xx += dx
+            }
+        }
+        if s1[x,y] == "L" && !c {
+            s2[x,y] = "#"
+            change = 1
+        } elif s1[x,y] == "#" && c >= 5 {
+            s2[x,y] = "L"
+            change = 1
+        }
+    }
+    if !change
+        break
+    for y in ln-1 for x in #s1-1
+        s1[x,y] = s2[x,y]
+}
+for y in ln-1 for x in #s1-1
+    n += s2[x,y] == "#"
+print(n)

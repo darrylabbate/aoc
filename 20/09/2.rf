@@ -1,0 +1,37 @@
+f = open(arg[1] or "input")
+while read(f,0)
+    n[++ln] = read(f)
+close(f)
+
+for i in 26..ln {
+    for j in i-1..i-25 {
+        for k in j-1..i-26 {
+            if n[j] + n[k] == n[i] {
+                p = 1
+                break
+            }
+        }
+    }
+    if !p {
+        invalid = n[i]
+        break
+    }
+    p = 0
+}
+minv = n[ln]
+maxv = 0
+for i in 1..ln
+for j in i..ln {
+    minv = n[j] < minv ? n[j] : minv
+    maxv = n[j] > maxv ? n[j] : maxv
+    w += n[j]
+    if w == invalid {
+        print(minv + maxv)
+        exit()
+    } elif w > invalid {
+        minv = n[ln]
+        maxv = 0
+        w = 0
+        break
+    }
+}

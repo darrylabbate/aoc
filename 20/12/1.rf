@@ -1,0 +1,14 @@
+move["N"] = fn (v) { y += v }
+move["E"] = fn (v) { x += v }
+move["S"] = fn (v) { y -= v }
+move["W"] = fn (v) { x -= v }
+move["L"] = fn (v) { d = ((d - (v/90)) + 4) % 4 }
+move["R"] = fn (v) { d =  (d + (v/90))      % 4 }
+move["F"] = fn (v) { move["NESW"[d]](v) }
+
+d = 1
+f = open(arg[1] or "input")
+while read(f) ~ /([A-Z])(\d+)/
+    move[$1]($2)
+close(f)
+print(abs(x) + abs(y))

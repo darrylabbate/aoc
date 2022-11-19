@@ -1,0 +1,11 @@
+f = open(arg[1] or "input")
+while read(f,0)
+    j[read(f)]++
+close(f)
+one   = j[1] != null
+three = j[3] != null
+for i,_ in j {
+    if   j[i+1] != null one++
+    elif j[i+3] != null three++
+}
+print(one * three)
