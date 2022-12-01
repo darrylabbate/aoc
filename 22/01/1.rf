@@ -1,0 +1,8 @@
+f = open(arg[1] or "input")
+for i, elf_calories in split(read(f,"a"),"\n\n")
+    for item in split(elf_calories)
+        elves[i] += item
+close(f)
+for v in elves
+    maxv = v > maxv ? v : maxv
+print(maxv)

@@ -1,0 +1,35 @@
+fn qselect(t, left, right, k) {
+    if right - left < 1
+        return t[left]
+    local pivot = left
+    for i in left+1..right {
+        if t[i] <= t[pivot] {
+            local temp = t[pivot]
+            if i == pivot + 1 {
+                t[pivot] = t[pivot+1]
+                t[pivot+1] = temp
+            } else {
+                t[pivot] = t[i]
+                t[i] = t[pivot+1]
+                t[pivot+1] = temp
+            }
+            ++pivot
+        }
+    }
+    if k == pivot
+        return t[k]
+    elif k < pivot
+        return qselect(t, left, pivot - 1, k)
+    else
+        return qselect(t, pivot + 1, right, k)
+}
+
+f = open(arg[1] or "input")
+for i, elf_calories in split(read(f,"a"),"\n\n")
+    for item in split(elf_calories)
+        elves[i] += item
+close(f)
+// Yes, Riff needs a builtin sort()
+for i in 1..3
+    maxv += qselect(elves, 0, #elves-1, #elves-i)
+print(maxv)
