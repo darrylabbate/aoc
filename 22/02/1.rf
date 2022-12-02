@@ -1,0 +1,9 @@
+f = open(arg[1] or 'input')
+while r = read(f) {
+    s += ord(r[2]) - ord('X')
+    s += r ~ /A X|B Y|C Z/ ? 3 :
+         r ~ /A Y|B Z|C X/ ? 6 : 0
+    s += 1
+}
+close(f)
+print(s)
