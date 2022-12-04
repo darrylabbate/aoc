@@ -1,0 +1,5 @@
+f = open(arg[1] or 'input')
+while read(f) ~ /(\d+)-(\d+),(\d+)-(\d+)/
+    n += $1 <= $3 and $2 >= $4 or $3 <= $1 and $4 >= $2
+close(f)
+print(n)
