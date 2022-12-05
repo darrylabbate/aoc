@@ -1,0 +1,16 @@
+f = open(arg[1] or 'input')
+while s = read(f) {
+    for i in 0..#s:4 {
+        chunk = s[i..i+3]
+        if chunk ~ /([A-Z])/
+            stack[int(i/4)+1] #= $1
+    }
+}
+while read(f) ~ /move (\d+) from (\d+) to (\d+)/ {
+    stack[$3] = stack[$2,0..$1-1] # stack[$3]
+    stack[$2] = stack[$2,$1..]
+}
+close(f)
+for v in stack
+    write(v[0])
+print('')
