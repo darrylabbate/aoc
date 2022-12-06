@@ -1,0 +1,10 @@
+k = 14
+f = open(arg[1] or 'input')
+datastream = read(f)
+close(f)
+for i in k..#datastream {
+    if datastream[i-k..i] !~ /(.).*\1/ {
+        print(i)
+        break
+    }
+}
