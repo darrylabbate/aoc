@@ -1,0 +1,20 @@
+f = open(arg[1] or 'input')
+while line = read(f) {
+    if line ~ /cd (.*)/ {
+        if $1 == '..'
+            path[#path-1] = null
+        else
+            path[#path] = $1
+    } elif line ~ /(\d+)/ {
+        local cwd = ''
+        for p in path {
+            cwd #= p == '/' ? '#p' : '#p/'
+            size[cwd] += $1
+        }
+    }
+}
+close(f)
+for v in size
+    if v <= 100000
+        sum += v
+print(sum)
