@@ -1,0 +1,27 @@
+f = open(arg[1] or 'input')
+while read(f,0)
+    grid[i++] = read(f)
+close(f)
+for y,t in grid for x,_ in t
+    n += is_visible(x,y)
+print(n)
+
+fn is_visible(x,y) {
+    local w = #grid[0]
+    local h = #grid
+    for dirs in [[1,0],[-1,0],[0,1],[0,-1]] {
+        dx = dirs[0]
+        dy = dirs[1]
+        xx = x + dx
+        yy = y + dy
+        while yy >= 0 and xx >= 0 and yy < w and xx < h {
+            if grid[xx,yy] >= grid[x,y]
+                break
+            xx += dx
+            yy += dy
+        }
+        if !(yy >= 0 and xx >= 0 and yy < w and xx < h)
+            return 1
+    }
+    return 0
+}

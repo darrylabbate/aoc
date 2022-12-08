@@ -1,0 +1,31 @@
+f = open(arg[1] or 'input')
+while read(f,0)
+    grid[i++] = read(f)
+close(f)
+for y,t in grid for x,_ in t {
+    s = score(x,y)
+    maxv = maxv < s ? s : maxv
+}
+print(maxv)
+
+fn score(x,y) {
+    local s = 1
+    local w = #grid[0]
+    local h = #grid
+    for dirs in [[1,0],[-1,0],[0,1],[0,-1]] {
+        c = 0
+        dx = dirs[0]
+        dy = dirs[1]
+        xx = x + dx
+        yy = y + dy
+        while yy >= 0 and xx >= 0 and yy < w and xx < h {
+            c++
+            if grid[xx,yy] >= grid[x,y]
+                break
+            xx += dx
+            yy += dy
+        }
+        s *= c
+    }
+    return s
+}
