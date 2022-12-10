@@ -1,0 +1,10 @@
+x[1] = 1
+
+f = open(arg[1] or 'input')
+for i,v in split(read(f,'a'))
+    x[i+2] = x[i+1] + v
+close(f)
+
+for n in 20..220:40
+    sum += x[n] * n
+print(sum)
