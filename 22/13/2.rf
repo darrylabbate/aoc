@@ -1,0 +1,60 @@
+f = open(arg[1] or 'input')
+idx = 1
+for i,s in split(read(f,'a'))
+    eval('packets[#i] = #s')
+close(f)
+
+packets[#packets] = [[2]]
+packets[#packets] = [[6]]
+qsort(packets, 0, #packets-1)
+for i,p in packets {
+    if cmp(p, [[2]]) == 0
+        i1 = i + 1
+    elif cmp(p, [[6]]) == 0
+        i2 = i + 1
+}
+print(i1*i2)
+
+fn qsort(t, left, right) {
+    if right - left < 1
+        return;
+    local pivot = left
+    for i in left+1..right {
+        if cmp(t[i], t[pivot]) < 1 {
+            local temp = t[pivot]
+            if i == pivot + 1 {
+                t[pivot] = t[pivot+1]
+                t[pivot+1] = temp
+            } else {
+                t[pivot] = t[i]
+                t[i] = t[pivot+1]
+                t[pivot+1] = temp
+            }
+            ++pivot
+        }
+    }
+    qsort(t, left, pivot - 1)
+    qsort(t, pivot + 1, right)
+}
+
+fn minv(x,y) {
+    return x < y ? x : y
+}
+
+fn cmp(l,r) {
+    if type(l) == 'int' and type(r) == 'int' {
+        return l < r ? -1 : l > r
+    } elif type(l) == 'int' and type(r) == 'table' {
+        return cmp([l],r)
+    } elif type(l) == 'table' and type(r) == 'int' {
+        return cmp(l,[r])
+    } else {
+        local res = 0
+        for i in 0..minv(#l,#r)-1:1 {
+            res = cmp(l[i], r[i])
+            if res
+                return res
+        }
+        return cmp(#l,#r)
+    }
+}

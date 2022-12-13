@@ -1,0 +1,33 @@
+f = open(arg[1] or 'input')
+idx = 1
+while read(f,0) {
+    eval('l = #{read(f)}')
+    eval('r = #{read(f)}')
+    sum += cmp(l, r) < 1 and idx
+    read(f)
+    ++idx
+}
+close(f)
+print(sum)
+
+fn minv(x,y) {
+    return x < y ? x : y
+}
+
+fn cmp(l,r) {
+    if type(l) == 'int' and type(r) == 'int' {
+        return l < r ? -1 : l > r
+    } elif type(l) == 'int' and type(r) == 'table' {
+        return cmp([l],r)
+    } elif type(l) == 'table' and type(r) == 'int' {
+        return cmp(l,[r])
+    } else {
+        local res = 0
+        for i in 0..minv(#l,#r)-1:1 {
+            res = cmp(l[i], r[i])
+            if res
+                return res
+        }
+        return cmp(#l,#r)
+    }
+}
