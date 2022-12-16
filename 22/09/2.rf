@@ -1,0 +1,37 @@
+fn move(h,t) {
+    while abs(h.x - t.x) > 1 or abs(h.y - t.y) > 1 {
+        if h.x - t.x
+            t.x += h.x > t.x ? 1 : -1
+        if h.y - t.y
+            t.y += h.y > t.y ? 1 : -1
+        t.grid[t.x,t.y] = 1
+    }
+}
+
+dir.U.x =  1  dir.U.y =  0
+dir.D.x = -1  dir.D.y =  0
+dir.L.x =  0  dir.L.y = -1
+dir.R.x =  0  dir.R.y =  1
+
+N = 10
+
+for i in 0..N-1 {
+    knot[i].x = 0
+    knot[i].y = 0
+    knot[i].grid[0,0] = 1
+}
+
+f = open(arg[1] or 'input')
+while read(f) ~ /(.) (\d+)/ {
+    for _ in 1..$2 {
+        knot[0].x += dir[$1].x
+        knot[0].y += dir[$1].y
+        for i in 1..N-1
+            move(knot[i-1], knot[i])
+    }
+}
+close(f)
+
+for y in knot[N-1].grid
+    sum += #y
+print(sum)

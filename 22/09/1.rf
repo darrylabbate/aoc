@@ -1,0 +1,31 @@
+mv.U = [ 1, 0]
+mv.D = [-1, 0]
+mv.L = [ 0,-1]
+mv.R = [ 0, 1]
+
+hx = 0
+hy = 0
+tx = 0
+ty = 0
+
+tail[tx,ty] = 1
+
+f = open(arg[1] or 'input')
+while read(f) ~ /(.) (\d+)/ {
+    for _ in 1..$2 {
+        hx += mv[$1,0]
+        hy += mv[$1,1]
+        while abs(hx-tx) > 1 or abs(hy-ty) > 1 {
+            if hx - tx
+                tx += hx > tx ? 1 : -1
+            if hy - ty
+                ty += hy > ty ? 1 : -1
+            tail[tx,ty] = 1
+        }
+    }
+}
+close(f)
+
+for y in tail
+    sum += #y
+print(sum)
