@@ -1,0 +1,16 @@
+f = open(arg[1] or 'input')
+read(f)
+for j,v in split(read(f), ',')
+    if v != 'x'
+        b[i++] = [v,j]
+close(f)
+lcm = 1
+time = 0
+for i in #b-2 {
+    bus_id = b[i+1,0]
+    idx = b[i+1,1]
+    lcm *= b[i,0]
+    while ((time + idx) % bus_id) != 0
+        time += lcm
+}
+printf('%.f\n', time)

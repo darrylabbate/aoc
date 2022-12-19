@@ -1,0 +1,12 @@
+f = open(arg[1] or 'input')
+e = read(f)
+for v in split(read(f), /,(x,)*/)
+    b[v] = v - (e % v)
+close(f)
+minv = 1e10
+for i,v in b
+    if v < minv {
+        minv = v
+        bus = i
+    }
+print(minv * bus)
